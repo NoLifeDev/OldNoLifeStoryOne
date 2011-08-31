@@ -37,3 +37,11 @@ inline int toint(const string& t) {
 	ss >> d;
 	return d;
 }
+
+inline double sqr(double x) {
+	return x*x;
+}
+
+inline double pdis(double x1, double y1, double x2, double y2) {
+	return sqrt(sqr(x1-x2)+sqr(y1-y2));
+}

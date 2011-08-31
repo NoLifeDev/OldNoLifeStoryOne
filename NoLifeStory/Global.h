@@ -7,6 +7,8 @@
 #include "..\SuperGlobal.h"
 #include "Utilities.h"
 #include "WZ.h"
+#include "Graphics.h"
+#include "Foothold.h"
 #include "Client.h"
 #include "Time.h"
 #include "Network.h"

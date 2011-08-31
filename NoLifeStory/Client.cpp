@@ -11,21 +11,19 @@ void NLS::Init(vector<string> args) {
 	Time.Step();
 	cout << "Initializing WZ data took: " << Time.tdelta << " seconds!" << endl;
 	Time.Reset();
+	Graphics::Init();
 	Map::Load("100000000", "");
 	Map::Load();
 }
 
 bool NLS::Loop() {
-	static uint64_t counter(0);
-	static double fps;
 	Time.Step();
-	fps += Time.delta;
-	counter++;
-	if (counter%1000000 == 0) {
-		cout << 1000000/fps << endl;
-		fps = 0;
+	sf::Event e;
+	while (window->GetEvent(e)) {
+		//Wheeeeeeeeeee
 	}
-	return false;
+	Graphics::Draw();
+	return true;
 }
 
 void NLS::Unload() {
