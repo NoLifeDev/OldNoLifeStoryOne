@@ -150,6 +150,7 @@ bool NLS::WZ::Init(string path) {
 NLS::WZ::File::File(string name) {
 	string filename = Path+name+".wz";
 	file.open(filename, file.in|file.binary);
+	cout << "INFO: Loading WZ file: " << filename << endl;
 	if (!file.is_open()) {
 		cerr << "ERROR: Failed to load WZ file: " << filename << endl;
 		throw(273);

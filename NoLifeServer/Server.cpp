@@ -42,7 +42,7 @@ void NLS::Loop() {
 					cout << "HELP: Displays information on commands available and what each command does" << endl;
 				}
 			} else {
-				cout << "HELP: Available commands: shutdown, forceshutdown" << endl;
+				cout << "HELP: Available commands: help, ?, shutdown, forceshutdown" << endl;
 				cout << "HELP: Enter \"help command\" for help with a particular command" << endl;
 			}
 		}
