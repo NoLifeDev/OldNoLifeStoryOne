@@ -7,6 +7,6 @@ extern NLS::LoginServer* loginServer;
 
 namespace NLS {
 	void Init(vector<string> args);
-	bool Loop();
+	void Loop();
 	void Unload();
 };

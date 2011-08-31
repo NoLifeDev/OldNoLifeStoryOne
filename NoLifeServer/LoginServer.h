@@ -8,7 +8,8 @@ namespace NLS {
 	public:
 		LoginServer();
 		void Loop();
-	private:
+		bool done;
 		sf::Thread* thread;
+		sf::TcpListener listener;
 	};
 };
