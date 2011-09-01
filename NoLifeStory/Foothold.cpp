@@ -4,6 +4,8 @@
 ////////////////////////////////////////////////////
 #include "Global.h"
 
+set <NLS::Foothold*> NLS::footholds;
+
 void NLS::Foothold::Load(Node n) {
 	n = n["foothold"];
 	if (!n) {
@@ -28,8 +30,44 @@ void NLS::Foothold::Load(Node n) {
 				fh->id = toint(k->first);
 				fh->layer = fhdepth;
 				fh->group = fhgroup;
-				//fh->dir = 
+				fh->dir = pdir(fh->x1, fh->y1, fh->x2, fh->y2);
+				fh->len = pdis(fh->x1, fh->y1, fh->x2, fh->y2);
+				fh->walk = fh->dir < 90 and fh->dir > -90;
+				fh->next = 0;
+				fh->prev = 0;
+				footholds.insert(fh);
 			}
 		}
 	}
+	for (auto i = footholds.begin(); i != footholds.end(); i++) {
+		for (auto j = footholds.begin(); j != footholds.end(); j++) {
+			auto fi = *i;
+			auto fj = *j;
+			if (fi->nextid == fj->id) {
+				fi->next = fj;
+			}
+			if (fi->previd == fj->id) {
+				fi->prev = fj;
+			}
+		}
+	}
+}
+
+void NLS::Foothold::Draw() {
+	glColor4f(1, 1, 1, 1);
+	glBindTexture(GL_TEXTURE_2D, 0);
+	glBegin(GL_LINES);
+	for (auto i = footholds.begin(); i != footholds.end(); i++) {
+		glVertex2f((*i)->x1, (*i)->y1);
+		glVertex2f((*i)->x2, (*i)->y2);
+	}
+	glEnd();
+}
+
+void NLS::Foothold::Unload() {
+	for (auto i = footholds.begin(); i != footholds.end(); i++) {
+		auto f = *i;
+		delete f;
+	}
+	footholds.clear();
 }

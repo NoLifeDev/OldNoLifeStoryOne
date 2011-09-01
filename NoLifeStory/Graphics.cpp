@@ -34,9 +34,7 @@ void NLS::Graphics::Init() {
 }
 
 void NLS::Graphics::Draw() {
-	static double fps(0);
-	fps = fps*0.99 + (1/max(Time.delta, 0.001))*0.01;
-	window->SetTitle("NoLifeStory::fps = "+tostring((int)fps));
 	glClear(GL_COLOR_BUFFER_BIT);
+	Foothold::Draw();
 	window->Display();
 }

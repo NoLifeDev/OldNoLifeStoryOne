@@ -14,6 +14,7 @@ void NLS::Map::Load(string id, string portal) {
 }
 
 void NLS::Map::Load() {
+	cout << "INFO: Loading map " << nextmap << endl;
 	char zone;
 	if (nextmap == "login") {
 		//Uh....
@@ -25,4 +26,6 @@ void NLS::Map::Load() {
 	}
 	string bgm = node["info"]["bgm"];
 	cout << "INFO: Background music: " << bgm << endl;
+	Foothold::Unload();
+	Foothold::Load(node);
 }

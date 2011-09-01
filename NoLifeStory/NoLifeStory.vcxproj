@@ -102,6 +102,7 @@
     <ClInclude Include="Network.h" />
     <ClInclude Include="Time.h" />
     <ClInclude Include="Utilities.h" />
+    <ClInclude Include="View.h" />
     <ClInclude Include="WZ.h" />
   </ItemGroup>
   <ItemGroup>
@@ -115,6 +116,7 @@
     </ClCompile>
     <ClCompile Include="Time.cpp" />
     <ClCompile Include="Utilities.cpp" />
+    <ClCompile Include="View.cpp" />
     <ClCompile Include="WZ.cpp" />
   </ItemGroup>
   <ItemGroup>

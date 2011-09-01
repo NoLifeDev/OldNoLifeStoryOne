@@ -262,7 +262,17 @@ void NLS::WZ::Image::Parse() {
 	}
 	new SubProperty(file, n, offset);
 	file->file.seekg(p);
-	//TODO: Resolve the UOLs
+	function <void(Node&)> Resolve = [&](Node& n) {
+		string s = n;
+		if (s.substr(0, 5) == "|UOL|") {
+			s.erase(0, 5);
+			cout << "UOL: Resolving " << s << endl;
+		}
+		for (auto it = n.Begin(); it != n.End(); it++) {
+			Resolve(it->second);
+		}
+	};
+	Resolve(n);
 	delete this;
 }
 
@@ -450,17 +460,23 @@ NLS::Node::operator bool() {
 }
 
 NLS::Node::operator string() {
-	assert(data);
+	if (!data) {
+		return string();
+	}
 	return data->stringValue;
 }
 
 NLS::Node::operator double() {
-	assert(data);
+	if (!data) {
+		return 0;
+	}
 	return data->floatValue;
 }
 
 NLS::Node::operator int() {
-	assert(data);
+	if (!data) {
+		return 0;
+	}
 	return data->intValue;
 }
 

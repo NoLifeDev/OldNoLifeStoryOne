@@ -12,12 +12,15 @@ void NLS::Init(vector<string> args) {
 	cout << "Initializing WZ data took: " << Time.tdelta << " seconds!" << endl;
 	Time.Reset();
 	Graphics::Init();
-	Map::Load("100000000", "");
+	Map::Load("10000", "");
 	Map::Load();
 }
 
 bool NLS::Loop() {
 	Time.Step();
+	static double fps(0);
+	fps = fps*0.99 + (1/max(Time.delta, 0.001))*0.01;
+	window->SetTitle("NoLifeStory::FrameRate = "+tostring((int)fps));
 	sf::Event e;
 	while (window->GetEvent(e)) {
 		//Wheeeeeeeeeee
