@@ -94,6 +94,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Client.h" />
+    <ClInclude Include="Console.h" />
     <ClInclude Include="Foothold.h" />
     <ClInclude Include="Global.h" />
     <ClInclude Include="Graphics.h" />
@@ -107,6 +108,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp" />
+    <ClCompile Include="Console.cpp" />
     <ClCompile Include="Foothold.cpp" />
     <ClCompile Include="Graphics.cpp" />
     <ClCompile Include="Map.cpp" />

@@ -3,12 +3,15 @@
 // Please see SuperGlobal.h for more information. //
 ////////////////////////////////////////////////////
 #include "Global.h"
-#include "Keys.h"
+//#include "Keys.h"
 
 set<NLS::WZ::File*> Files;
 string Path;
 NLS::Node NLS::WZ::Top;
 NLS::Node NLS::WZ::Empty;
+
+uint8_t GMSKeyIV[4] = {0x4D, 0x23, 0xC7, 0x2B};
+uint32_t OffsetKey = 0x581C3F6D;
 
 #pragma region File Reading Stuff
 template <class t>
@@ -32,7 +35,7 @@ inline uint32_t ReadOffset(NLS::WZ::File* file) {
 	uint32_t p = file->file.tellg();
 	p = (p-file->head->fileStart)^0xFFFFFFFF;
 	p *= file->head->versionHash;
-	p -= 0x581C3F6D;
+	p -= OffsetKey;
 	p = (p<<(p&0x1F))|(p>>(32-p&0x1F));
 	uint32_t more;
 	Read(file->file, more);
@@ -47,7 +50,7 @@ inline string ReadEncString(ifstream& file) {
 	if (slen == 0) {
 		return string();
 	} else if (slen > 0) {
-		uint32_t len;
+		int32_t len;
 		if (slen == 0x7F) {
 			Read(file, len);
 		} else {
@@ -68,7 +71,7 @@ inline string ReadEncString(ifstream& file) {
 		}
 		return s;
 	} else {
-		uint32_t len;
+		int32_t len;
 		if (slen == -128) {
 			Read(file, len);
 		} else {
@@ -78,7 +81,7 @@ inline string ReadEncString(ifstream& file) {
 			return string();
 		}
 		string s(len, '\0');
-		uint16_t mask = 0xAA;
+		uint8_t mask = 0xAA;
 		for (int i = 0; i < len; i++) {
 			uint8_t enc;
 			Read(file, enc);
@@ -157,7 +160,7 @@ NLS::WZ::File::File(string name) {
 	}
 	Files.insert(this);
 	head = new Header(this);
-	for (int i = 1; i < 0x7F; i++) {
+	for (int i = 1; i < 0xFF; i++) {
 		uint32_t vh = Hash(head->version, i);
 		if (vh) {
 			head->versionHash = vh;
@@ -168,8 +171,8 @@ NLS::WZ::File::File(string name) {
 }
 
 uint32_t NLS::WZ::File::Hash(uint16_t enc, uint16_t real) {
-	char s[5];
-	int l = sprintf(s, "%d", real);
+	string s = tostring(real);
+	int l = s.size();
 	int hash = 0;
 	for (int i = 0; i < l; i++) {
 		hash = 32*hash+s[i]+1;
@@ -195,6 +198,7 @@ NLS::WZ::Header::Header(File* file) {
 
 NLS::WZ::Directory::Directory(File* file, Node n) {
 	int32_t count = ReadCInt(file->file);
+	set<tuple<Node, uint32_t>> dirs;
 	for (int i = 0; i < count; i++) {
 		string name;
 		uint8_t type;
@@ -221,14 +225,15 @@ NLS::WZ::Directory::Directory(File* file, Node n) {
 		int32_t checksum = ReadCInt(file->file);
 		uint32_t offset = ReadOffset(file);
 		if (type == 3) {
-			uint32_t p = file->file.tellg();
-			file->file.seekg(offset);
-			new Directory(file, n.g(name));
-			file->file.seekg(p);
+			dirs.insert(tuple(n.g(name), offset));
 		} else {
 			name.erase(name.size()-4);
 			new Image(file, n.g(name), offset);
 		}
+	}
+	for (auto it = dirs.begin(); it != dirs.end(); it++) {
+		file->file.seekg(it->second);
+		new Directory(file, it->first);
 	}
 	delete this;
 }
@@ -241,7 +246,6 @@ NLS::WZ::Image::Image(File* file, Node n, uint32_t offset) {
 }
 
 void NLS::WZ::Image::Parse() {
-	uint32_t p = file->file.tellg();
 	file->file.seekg(offset);
 	uint8_t a;
 	Read(file->file, a);
@@ -261,7 +265,6 @@ void NLS::WZ::Image::Parse() {
 		throw(273);
 	}
 	new SubProperty(file, n, offset);
-	file->file.seekg(p);
 	function <void(Node&)> Resolve = [&](Node& n) {
 		string s = n;
 		if (s.substr(0, 5) == "|UOL|") {
