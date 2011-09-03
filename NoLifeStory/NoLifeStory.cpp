@@ -5,6 +5,7 @@
 #include "Global.h"
 
 int main(int argc, char **argv) {//Not much to do here
+	NLS::Console c;
 #if defined(NLS_WINDOWS) && defined(_CONSOLE)
 	SetConsoleTitleA("NoLifeStory::Console");
 	HANDLE hIcon = LoadIconW(GetModuleHandleW(NULL), MAKEINTRESOURCEW(IDI_NOLIFESTORY_ICON));

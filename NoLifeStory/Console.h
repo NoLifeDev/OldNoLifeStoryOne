@@ -12,9 +12,11 @@ namespace NLS {
 		void HandleCommand(string command);
 	private:
 		sf::RenderWindow* window;
-		u32string str;
+		string str;
 		int32_t pos;
-		vector <u32string> strs;
+		vector <string> strs;
 		sf::Font* font;
+		bool shutdown;
+		sf::Thread* t;
 	};
 };
