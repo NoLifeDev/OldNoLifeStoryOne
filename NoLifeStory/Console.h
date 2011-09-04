@@ -28,21 +28,23 @@ namespace NLS {
 	class Stream {
 	public:
 		template <class T>
-		Stream& operator << (T& v) {
+		Stream& operator << (T v) {
 			line << v;
 			return *this;
 		}
 		template <>
-		Stream& operator << <Endl_> (Endl_&) {
-			if (!line.str().empty()) {
-				console->Push(line.str());
-				line.clear();
+		Stream& operator << <Endl_> (Endl_) {
+			string s = line.str();
+			if (!s.empty()) {
+				console->Push(s);
+				line.str("");
 			}
+			return *this;
 		}
 	private:
 		stringstream line;
 	};
-	inline Stream& Out(string type) {
+	inline Stream& C(string type) {
 		static Stream s;
 		s << Endl;
 		s << type << ": ";

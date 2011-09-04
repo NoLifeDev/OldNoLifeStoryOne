@@ -154,9 +154,9 @@ bool NLS::WZ::Init(string path) {
 NLS::WZ::File::File(string name) {
 	string filename = Path+name+".wz";
 	file.open(filename, file.in|file.binary);
-	cout << "INFO: Loading WZ file: " << filename << endl;
+	C("WZ") << "Loading file: " << filename << Endl;
 	if (!file.is_open()) {
-		cerr << "ERROR: Failed to load WZ file: " << filename << endl;
+		C("ERROR") << "Failed to load WZ file" << Endl;
 		throw(273);
 	}
 	Files.insert(this);
@@ -167,7 +167,8 @@ NLS::WZ::File::File(string name) {
 		if (vh) {
 			//TODO: Add proper support for detecting which version is the correct version
 			if (version) {
-				cerr << "ERROR: Conflicting versions: " << version << " and " << i << endl;
+				C("ERROR") << "Conflicting WZ versions: " << version << " and " << i << Endl;
+				throw(273);
 			}
 			head->versionHash = vh;
 			version = i;
@@ -252,26 +253,17 @@ NLS::WZ::Image::Image(File* file, Node n, uint32_t offset) {
 void NLS::WZ::Image::Parse() {
 	file->file.seekg(offset);
 	uint8_t a = Read<uint8_t>(file);
-	if (a != 0x73) {
-		cerr << "ERROR: Parsing fail" << endl;
-		throw(273);
-	}
+	assert(a == 0x73);
 	string s = ReadEncString(file->file);
-	if (s != "Property") {
-		cerr << "ERROR: Parsing fail" << endl;
-		throw(273);
-	}
+	assert(s == "Property");
 	uint16_t b = Read<uint16_t>(file);
-	if (b != 0) {
-		cerr << "ERROR: Parsing fail" << endl;
-		throw(273);
-	}
+	assert(b == 0);
 	new SubProperty(file, n, offset);
 	function <void(Node&)> Resolve = [&](Node& n) {
 		string s = n;
 		if (s.substr(0, 5) == "|UOL|") {
 			s.erase(0, 5);
-			cout << "UOL: Resolving " << s << endl;
+			C("WZ") << "Resolving UOL: " << s << Endl;
 			//TODO: Actually resolve the UOL
 		}
 		for (auto it = n.Begin(); it != n.End(); it++) {
@@ -318,7 +310,7 @@ NLS::WZ::SubProperty::SubProperty(File* file, Node n, uint32_t offset) {
 				break;
 			}
 		default:
-			cerr << "ERROR: Wat?" << endl;
+			C("ERROR") << "Unknown Property type" << Endl;
 			throw(273);
 		}
 	}
@@ -373,11 +365,11 @@ NLS::WZ::ExtendedProperty::ExtendedProperty(File* file, Node n, uint32_t offset,
 				break;
 			}
 		default:
-			cerr << "ERROR: Wat?" << endl;
+			C("ERROR") << "Unknown UOL type" << Endl;
 			throw(273);
 		}
 	} else {
-		cerr << "ERROR: Wat?" << endl;
+		C("ERROR") << "Unknown ExtendedProperty type" << Endl;
 		throw(273);
 	}
 	delete this;

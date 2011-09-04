@@ -5,11 +5,12 @@
 #include "Global.h"
 
 void NLS::Init(vector<string> args) {
+	C("INFO") << "Initializing NoLifeStory" << Endl;
 	Network::Init();
 	Time.Reset();
 	WZ::Init(args[1]);
 	Time.Step();
-	cout << "INFO: WZ Data initialized in " << floor(Time.tdelta*1000) << " ms" << endl;
+	C("WZ") << "Directories initialized in " << floor(Time.tdelta*1000) << " ms" << Endl;
 	Time.Reset();
 	Graphics::Init();
 	Map::Load("10000", "");
@@ -31,6 +32,7 @@ bool NLS::Loop() {
 			switch (e.Key.Code) {
 			case sf::Key::Tilde:
 				console->Toggle();
+				break;
 			}
 			break;
 		case sf::Event::Closed:

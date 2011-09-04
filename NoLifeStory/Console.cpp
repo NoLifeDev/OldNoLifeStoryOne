@@ -18,6 +18,7 @@ NLS::Console::Console() {
 
 void NLS::Console::Loop() {
 	window = new sf::RenderWindow(sf::VideoMode(400,400,32), "NoLifeStory::FancyConsole", sf::Style::Resize|sf::Style::Close, sf::ContextSettings(0, 0, 0, 2, 0));
+	window->Show(show);
 #ifdef NLS_WINDOWS
 	HANDLE hIcon = LoadIconW(GetModuleHandleW(NULL), MAKEINTRESOURCEW(IDI_NOLIFESTORY_ICON));
 	HWND hWnd = window->GetSystemHandle();
@@ -68,7 +69,7 @@ void NLS::Console::Loop() {
 				}
 				break;
 			case sf::Event::TextEntered:
-				if (e.Text.Unicode != 13 and e.Text.Unicode != 8) {
+				if (e.Text.Unicode != 13 and e.Text.Unicode != 8 and e.Text.Unicode != 96 and e.Text.Unicode != 27) {
 					str.insert(pos++, 1, e.Text.Unicode);
 				}
 				break;
@@ -77,6 +78,7 @@ void NLS::Console::Loop() {
 				toggle = true;
 				break;
 			case sf::Event::Resized:
+				window->SetView(sf::View(sf::FloatRect(0, 0, window->GetWidth(), window->GetHeight())));
 				break;
 			}
 		}
@@ -89,6 +91,9 @@ void NLS::Console::Loop() {
 			sf::Text t(strs[strs.size()-i-1], *font, 8);
 			t.SetPosition(0, window->GetHeight()-12*i-24);
 			window->Draw(t);
+			if (window->GetHeight()-12*i-24 < 0) {
+				break;
+			}
 		}
 		m.Unlock();
 		sf::Shape s = sf::Shape::Line(0, window->GetHeight()-12, window->GetWidth(), window->GetHeight()-12, 1, sf::Color::White);
@@ -117,7 +122,7 @@ void NLS::Console::Push(string str) {
 }
 
 void NLS::Console::Toggle() {
-	show != show;
+	show = !show;
 	toggle = true;
 }
 
