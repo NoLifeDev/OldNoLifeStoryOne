@@ -26,12 +26,21 @@ bool NLS::Loop() {
 	}
 	sf::Event e;
 	while (window->GetEvent(e)) {
-		//Wheeeeeeeeeee
+		switch (e.Type) {
+		case sf::Event::KeyPressed:
+			switch (e.Key.Code) {
+			case sf::Key::Tilde:
+				console->Toggle();
+			}
+			break;
+		case sf::Event::Closed:
+			return false;
+			break;
+		}
 	}
 	Graphics::Draw();
 	return true;
 }
 
 void NLS::Unload() {
-	delete console;
 }
