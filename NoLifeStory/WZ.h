@@ -48,9 +48,7 @@ namespace NLS {
 		class Directory;
 		class File;
 		class Image;
-		class PrimitiveProperty;
 		class SubProperty;
-		class CanvasProperty;
 		class PNGProperty;
 		class SoundProperty;
 		//And now lets define them somehow
@@ -60,7 +58,7 @@ namespace NLS {
 			string ident;
 			uint64_t fileSize;
 			uint32_t fileStart;
-			uint16_t version;
+			int16_t version;
 			string copyright;
 			uint32_t versionHash;
 		};

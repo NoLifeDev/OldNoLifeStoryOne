@@ -10,20 +10,30 @@ string Path;
 NLS::Node NLS::WZ::Top;
 NLS::Node NLS::WZ::Empty;
 
+uint8_t GMSKeyIV[4] = {0x4D, 0x23, 0xC7, 0x2B};
+uint32_t OffsetKey = 0x581C3F6D;
+
 #pragma region File Reading Stuff
-template <class t>
-inline void Read(ifstream& file, t& v) {
+template <class T>
+inline T Read(ifstream& file) {
+	T v;
 	file.read((char*)&v, sizeof(v));
+	return v;
+}
+
+template <class T>
+inline T Read(NLS::WZ::File* file) {
+	T v;
+	file->file.read((char*)&v, sizeof(v));
+	return v;
 }
 
 inline int32_t ReadCInt(ifstream& file) {
-	int8_t a;
-	Read(file, a);
+	int8_t a = Read<int8_t>(file);
 	if (a != -128) {
 		return a;
 	} else {
-		int32_t b;
-		Read(file, b);
+		int32_t b = Read<int32_t>(file);
 		return b;
 	}
 }
@@ -32,24 +42,22 @@ inline uint32_t ReadOffset(NLS::WZ::File* file) {
 	uint32_t p = file->file.tellg();
 	p = (p-file->head->fileStart)^0xFFFFFFFF;
 	p *= file->head->versionHash;
-	p -= 0x581C3F6D;
+	p -= OffsetKey;
 	p = (p<<(p&0x1F))|(p>>(32-p&0x1F));
-	uint32_t more;
-	Read(file->file, more);
+	uint32_t more = Read<uint32_t>(file);
 	p ^= more;
 	p += file->head->fileStart*2;
 	return p;
 }
 
 inline string ReadEncString(ifstream& file) {
-	int8_t slen;
-	Read(file, slen);
+	int8_t slen = Read<int8_t>(file);
 	if (slen == 0) {
 		return string();
 	} else if (slen > 0) {
-		uint32_t len;
+		int32_t len;
 		if (slen == 0x7F) {
-			Read(file, len);
+			len = Read<int32_t>(file);
 		} else {
 			len = slen;
 		}
@@ -59,8 +67,7 @@ inline string ReadEncString(ifstream& file) {
 		string s(len, '\0');
 		uint16_t mask = 0xAAAA;
 		for (int i = 0; i < len; i++) {
-			uint16_t enc;
-			Read(file, enc);
+			uint16_t enc = Read<uint16_t>(file);
 			enc ^= mask;
 			enc ^= (WZKey[i*2+1]<<8)+WZKey[i*2];
 			mask++;
@@ -68,9 +75,9 @@ inline string ReadEncString(ifstream& file) {
 		}
 		return s;
 	} else {
-		uint32_t len;
+		int32_t len;
 		if (slen == -128) {
-			Read(file, len);
+			len = Read<int32_t>(file);
 		} else {
 			len = -slen;
 		}
@@ -78,10 +85,9 @@ inline string ReadEncString(ifstream& file) {
 			return string();
 		}
 		string s(len, '\0');
-		uint16_t mask = 0xAA;
+		uint8_t mask = 0xAA;
 		for (int i = 0; i < len; i++) {
-			uint8_t enc;
-			Read(file, enc);
+			uint8_t enc = Read<uint8_t>(file);
 			enc ^= mask;
 			enc ^= WZKey[i];
 			mask++;
@@ -92,8 +98,7 @@ inline string ReadEncString(ifstream& file) {
 }
 
 inline string ReadString(ifstream& file, uint32_t offset) {
-	uint8_t a;
-	Read(file, a);
+	uint8_t a = Read<uint8_t>(file);
 	switch (a) {
 	case 0x00:
 	case 0x73:
@@ -101,8 +106,7 @@ inline string ReadString(ifstream& file, uint32_t offset) {
 	case 0x01:
 	case 0x1B:
 		{
-			int32_t off;
-			Read(file, off);
+			int32_t off = Read<int32_t>(file);
 			offset += off;
 			uint32_t p = file.tellg();
 			file.seekg(offset);
@@ -150,16 +154,22 @@ bool NLS::WZ::Init(string path) {
 NLS::WZ::File::File(string name) {
 	string filename = Path+name+".wz";
 	file.open(filename, file.in|file.binary);
-	cout << "INFO: Loading WZ file: " << filename << endl;
+	C("WZ") << "Loading file: " << filename << Endl;
 	if (!file.is_open()) {
-		cerr << "ERROR: Failed to load WZ file: " << filename << endl;
+		C("ERROR") << "Failed to load WZ file" << Endl;
 		throw(273);
 	}
 	Files.insert(this);
 	head = new Header(this);
-	for (int i = 1; i < 0x7F; i++) {
+	version = 0;
+	for (uint16_t i = 60; i < 120; i++) {
 		uint32_t vh = Hash(head->version, i);
 		if (vh) {
+			//TODO: Add proper support for detecting which version is the correct version
+			if (version) {
+				C("ERROR") << "Conflicting WZ versions: " << version << " and " << i << Endl;
+				throw(273);
+			}
 			head->versionHash = vh;
 			version = i;
 		}
@@ -168,9 +178,9 @@ NLS::WZ::File::File(string name) {
 }
 
 uint32_t NLS::WZ::File::Hash(uint16_t enc, uint16_t real) {
-	char s[5];
-	int l = sprintf(s, "%d", real);
-	int hash = 0;
+	string s = tostring(real);
+	int l = s.size();
+	uint32_t hash = 0;
 	for (int i = 0; i < l; i++) {
 		hash = 32*hash+s[i]+1;
 	}
@@ -186,28 +196,27 @@ NLS::WZ::Header::Header(File* file) {
 	char s1[4];
 	file->file.read(s1, 4);
 	ident.assign(s1, 4);
-	Read(file->file, fileSize);
-	Read(file->file, fileStart);
+	fileSize = Read<uint64_t>(file);
+	fileStart = Read<uint32_t>(file);
 	file->file >> copyright;
 	file->file.seekg(fileStart);
-	Read(file->file, version);
+	version = Read<int16_t>(file);
 }
 
 NLS::WZ::Directory::Directory(File* file, Node n) {
 	int32_t count = ReadCInt(file->file);
+	set<pair<string, uint32_t>> dirs;
 	for (int i = 0; i < count; i++) {
 		string name;
-		uint8_t type;
-		Read(file->file, type);
+		uint8_t type = Read<uint8_t>(file);
 		if (type == 1) {
 			file->file.seekg(10, ios_base::cur);
 			continue;
 		} else if (type == 2) {
-			int32_t s;
-			Read(file->file, s);
+			int32_t s = Read<int32_t>(file);
 			uint32_t p = file->file.tellg();
 			file->file.seekg(file->head->fileStart+s);
-			Read(file->file, type);
+			type = Read<uint8_t>(file);
 			name = ReadEncString(file->file);
 			file->file.seekg(p);
 		} else if (type == 3) {
@@ -221,14 +230,15 @@ NLS::WZ::Directory::Directory(File* file, Node n) {
 		int32_t checksum = ReadCInt(file->file);
 		uint32_t offset = ReadOffset(file);
 		if (type == 3) {
-			uint32_t p = file->file.tellg();
-			file->file.seekg(offset);
-			new Directory(file, n.g(name));
-			file->file.seekg(p);
+			dirs.insert(pair<string, uint32_t>(name, offset));
 		} else {
 			name.erase(name.size()-4);
 			new Image(file, n.g(name), offset);
 		}
+	}
+	for (auto it = dirs.begin(); it != dirs.end(); it++) {
+		file->file.seekg(it->second);
+		new Directory(file, n.g(it->first));
 	}
 	delete this;
 }
@@ -241,28 +251,26 @@ NLS::WZ::Image::Image(File* file, Node n, uint32_t offset) {
 }
 
 void NLS::WZ::Image::Parse() {
-	uint32_t p = file->file.tellg();
 	file->file.seekg(offset);
-	uint8_t a;
-	Read(file->file, a);
-	if (a != 0x73) {
-		cerr << "ERROR: Parsing fail" << endl;
-		throw(273);
-	}
+	uint8_t a = Read<uint8_t>(file);
+	assert(a == 0x73);
 	string s = ReadEncString(file->file);
-	if (s != "Property") {
-		cerr << "ERROR: Parsing fail" << endl;
-		throw(273);
-	}
-	uint16_t b;
-	Read(file->file, b);
-	if (b != 0) {
-		cerr << "ERROR: Parsing fail" << endl;
-		throw(273);
-	}
+	assert(s == "Property");
+	uint16_t b = Read<uint16_t>(file);
+	assert(b == 0);
 	new SubProperty(file, n, offset);
-	file->file.seekg(p);
-	//TODO: Resolve the UOLs
+	function <void(Node&)> Resolve = [&](Node& n) {
+		string s = n;
+		if (s.substr(0, 5) == "|UOL|") {
+			s.erase(0, 5);
+			C("WZ") << "Resolving UOL: " << s << Endl;
+			//TODO: Actually resolve the UOL
+		}
+		for (auto it = n.Begin(); it != n.End(); it++) {
+			Resolve(it->second);
+		}
+	};
+	Resolve(n);
 	delete this;
 }
 
@@ -270,55 +278,39 @@ NLS::WZ::SubProperty::SubProperty(File* file, Node n, uint32_t offset) {
 	int32_t count = ReadCInt(file->file);
 	for (int i = 0; i < count; i++) {
 		string name = ReadString(file->file, offset);
-		uint8_t a;
-		Read(file->file, a);
+		uint8_t a = Read<uint8_t>(file);
 		switch (a) {
 		case 0x00:
 			n.g(name);
 			break;
 		case 0x0B:
 		case 0x02:
-			{
-				uint16_t v;
-				Read(file->file, v);
-				n.g(name) = v;
-				break;
-			}
+			n.g(name) = Read<uint16_t>(file);
+			break;
 		case 0x03:
 			n.g(name) = ReadCInt(file->file);
 			break;
 		case 0x04:
-			{
-				uint8_t type;
-				Read(file->file, type);
-				if (type == 0x80) {
-					float v;
-					Read(file->file, v);
-					n.g(name) = v;
-				}
-				break;
+			if (Read<uint8_t>(file) == 0x80) {
+				n.g(name) = Read<float>(file);
 			}
+			break;
 		case 0x05:
-			{
-				double v;
-				Read(file->file, v);
-				n.g(name) = v;
+				n.g(name) = Read<double>(file);;
 				break;
-			}
 		case 0x08:
 			n.g(name) = ReadString(file->file, offset);
 			break;
 		case 0x09:
 			{
-				uint32_t temp;
-				Read(file->file, temp);
-				uint32_t eob = temp+file->file.tellg();
-				new ExtendedProperty(file, n.g(name), offset, eob);
-				file->file.seekg(eob);
+				uint32_t temp = Read<uint32_t>(file);
+				temp += file->file.tellg();
+				new ExtendedProperty(file, n.g(name), offset, temp);
+				file->file.seekg(temp);
 				break;
 			}
 		default:
-			cerr << "ERROR: Wat?" << endl;
+			C("ERROR") << "Unknown Property type" << Endl;
 			throw(273);
 		}
 	}
@@ -327,11 +319,9 @@ NLS::WZ::SubProperty::SubProperty(File* file, Node n, uint32_t offset) {
 
 NLS::WZ::ExtendedProperty::ExtendedProperty(File* file, Node n, uint32_t offset, uint32_t eob) {
 	string name;
-	uint8_t a;
-	Read(file->file, a);
+	uint8_t a = Read<uint8_t>(file);
 	if (a == 0x1B) {
-		int32_t inc;
-		Read(file->file, inc);
+		int32_t inc = Read<int32_t>(file);
 		uint32_t pos = offset+inc;
 		uint32_t p = file->file.tellg();
 		file->file.seekg(pos);
@@ -345,8 +335,7 @@ NLS::WZ::ExtendedProperty::ExtendedProperty(File* file, Node n, uint32_t offset,
 		new SubProperty(file, n, offset);
 	} else if (name == "Canvas") {
 		file->file.seekg(1, ios_base::cur);
-		uint8_t b;
-		Read(file->file, b);
+		uint8_t b = Read<uint8_t>(file);
 		if (b == 1) {
 			file->file.seekg(2, ios_base::cur);
 			new SubProperty(file, n, offset);
@@ -364,25 +353,23 @@ NLS::WZ::ExtendedProperty::ExtendedProperty(File* file, Node n, uint32_t offset,
 		//TODO: Do something with the mp3 property
 	} else if (name == "UOL") {
 		file->file.seekg(1, ios_base::cur);
-		uint8_t b;
-		Read(file->file, b);
+		uint8_t b = Read<uint8_t>(file);
 		switch (b) {
 		case 0:
 			n.g(name) = string("|UOL|")+ReadEncString(file->file);
 			break;
 		case 1:
 			{
-				uint32_t off;
-				Read(file->file, off);
+				uint32_t off = Read<uint32_t>(file);
 				n.g(name) = string("|UOL|")+ReadStringOffset(file->file, offset+off);
 				break;
 			}
 		default:
-			cerr << "ERROR: Wat?" << endl;
+			C("ERROR") << "Unknown UOL type" << Endl;
 			throw(273);
 		}
 	} else {
-		cerr << "ERROR: Wat?" << endl;
+		C("ERROR") << "Unknown ExtendedProperty type" << Endl;
 		throw(273);
 	}
 	delete this;
@@ -432,6 +419,7 @@ NLS::Node& NLS::Node::g(const string& key) {
 	Node& n = data->children[key];
 	n.data = new NodeData();
 	n.data->parent = *this;
+	n.data->name = key;
 	return n;
 }
 
@@ -450,17 +438,23 @@ NLS::Node::operator bool() {
 }
 
 NLS::Node::operator string() {
-	assert(data);
+	if (!data) {
+		return string();
+	}
 	return data->stringValue;
 }
 
 NLS::Node::operator double() {
-	assert(data);
+	if (!data) {
+		return 0;
+	}
 	return data->floatValue;
 }
 
 NLS::Node::operator int() {
-	assert(data);
+	if (!data) {
+		return 0;
+	}
 	return data->intValue;
 }
 
