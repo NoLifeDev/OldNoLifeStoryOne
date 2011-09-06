@@ -9,7 +9,7 @@ set<NLS::WZ::File*> Files;
 string Path;
 NLS::Node NLS::WZ::Top;
 NLS::Node NLS::WZ::Empty;
-
+uint8_t *WZKey = 0;
 uint8_t GMSKeyIV[4] = {0x4D, 0x23, 0xC7, 0x2B};
 uint32_t OffsetKey = 0x581C3F6D;
 
@@ -132,22 +132,34 @@ inline string ReadStringOffset(ifstream& file, uint32_t offset) {
 bool NLS::WZ::Init(string path) {
 	Path = path;
 	Top.data = new NodeData();
-	new File("Base");
-	new File("Character");
-	new File("Effect");
-	new File("Etc");
-	new File("Item");
-	new File("Map");
-	new File("Mob");
-	new File("Morph");
-	new File("Npc");
-	new File("Quest");
-	new File("Reactor");
-	new File("Skill");
-	new File("Sound");
-	new File("String");
-	new File("TamingMob");
-	new File("UI");
+	ifstream test(path+"Data.wz");
+	bool beta = test.is_open();
+	test.close();
+	if (beta) {
+		C("WZ") << "Loading beta WZ files" << Endl;
+		WZKey = new uint8_t[0xFFFF];
+		memset(WZKey, 0, 0xFFFF);
+		new File("Data");
+	} else {
+		C("WZ") << "Loading standard WZ files" << Endl;
+		WZKey = GMSKey;
+		new File("Base");
+		new File("Character");
+		new File("Effect");
+		new File("Etc");
+		new File("Item");
+		new File("Map");
+		new File("Mob");
+		new File("Morph");
+		new File("Npc");
+		new File("Quest");
+		new File("Reactor");
+		new File("Skill");
+		new File("Sound");
+		new File("String");
+		new File("TamingMob");
+		new File("UI");
+	}
 	return true;
 }
 
@@ -162,7 +174,7 @@ NLS::WZ::File::File(string name) {
 	Files.insert(this);
 	head = new Header(this);
 	version = 0;
-	for (uint16_t i = 60; i < 120; i++) {
+	for (uint16_t i = 40; i < 120; i++) {
 		uint32_t vh = Hash(head->version, i);
 		if (vh) {
 			//TODO: Add proper support for detecting which version is the correct version
@@ -174,7 +186,11 @@ NLS::WZ::File::File(string name) {
 			version = i;
 		}
 	}
-	new Directory(this, Top.g(name));
+	if (name == "Data") {
+		new Directory(this, Top);
+	} else {
+		new Directory(this, Top.g(name));
+	}
 }
 
 uint32_t NLS::WZ::File::Hash(uint16_t enc, uint16_t real) {
