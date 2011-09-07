@@ -27,7 +27,7 @@ void NLS::LoginServer::Loop() {
 		}
 		sf::Sleep(0.1);
 		if (done) {
-			//Shutdown world servers
+			//Shutdown world serverz
 			cout << "INFO: Shutting down LoginServer" << endl;
 			//Clean up stuff
 			break;
