@@ -10,8 +10,13 @@ string Path;
 NLS::Node NLS::WZ::Top;
 NLS::Node NLS::WZ::Empty;
 uint8_t *WZKey = 0;
+uint8_t BMSKey[0xFFFF];
+uint8_t *WZKeys[] = {GMSKey, BMSKey};
 uint8_t GMSKeyIV[4] = {0x4D, 0x23, 0xC7, 0x2B};
 uint32_t OffsetKey = 0x581C3F6D;
+int16_t EncVersion;
+uint16_t Version;
+uint32_t VersionHash;
 
 #pragma region File Reading Stuff
 template <class T>
@@ -130,35 +135,21 @@ inline string ReadStringOffset(ifstream& file, uint32_t offset) {
 
 #pragma region Parsing Stuff
 bool NLS::WZ::Init(const string& path) {
+	memset(GMSKey, 0, 0xFFFF);
 	Path = path;
 	Top.data = new NodeData();
 	ifstream test(path+"Data.wz");
 	bool beta = test.is_open();
 	test.close();
 	if (beta) {
-		C("WZ") << "Loading beta WZ files" << Endl;
-		WZKey = new uint8_t[0xFFFF];
-		memset(WZKey, 0, 0xFFFF);
-		new File("Data");
+		C("WZ") << "Loading beta WZ file structure" << Endl;
+		new File("Data", true);
 	} else {
-		C("WZ") << "Loading standard WZ files" << Endl;
-		WZKey = GMSKey;
-		new File("Base");
-		new File("Character");
-		new File("Effect");
-		new File("Etc");
-		new File("Item");
-		new File("Map");
-		new File("Mob");
-		new File("Morph");
-		new File("Npc");
-		new File("Quest");
-		new File("Reactor");
-		new File("Skill");
-		new File("Sound");
-		new File("String");
-		new File("TamingMob");
-		new File("UI");
+		C("WZ") << "Loading standard WZ file structure" << Endl;
+		new File("Base", false);
+		for (auto it = Top.Begin(); it != Top.End(); it++) {
+			new File(it->first);
+		}
 	}
 	return true;
 }
@@ -173,11 +164,27 @@ NLS::WZ::File::File(const string& name) {
 	}
 	Files.insert(this);
 	head = new Header(this);
+	if (head->version != EncVersion) {
+		C("ERROR") << "Version of WZ file does not match existing files" << Endl;
+	}
+	head->versionHash = VersionHash;
+	version = Version;
+	new Directory(this, Top.g(name));
+}
+NLS::WZ::File::File(const string& name, bool beta) {//TODO: Finish this!
+	string filename = Path+name+".wz";
+	file.open(filename, file.in|file.binary);
+	C("WZ") << "Loading file: " << filename << Endl;
+	if (!file.is_open()) {
+		C("ERROR") << "Failed to load WZ file" << Endl;
+		throw(273);
+	}
+	Files.insert(this);
+	head = new Header(this);
 	version = 0;
-	for (uint16_t i = 40; i < 120; i++) {
+	for (uint16_t i = 0; i < 256; i++) {
 		uint32_t vh = Hash(head->version, i);
 		if (vh) {
-			//TODO: Add proper support for detecting which version is the correct version
 			if (version) {
 				C("ERROR") << "Conflicting WZ versions: " << version << " and " << i << Endl;
 				throw(273);
@@ -186,7 +193,7 @@ NLS::WZ::File::File(const string& name) {
 			version = i;
 		}
 	}
-	if (name == "Data") {
+	if (beta) {
 		new Directory(this, Top);
 	} else {
 		new Directory(this, Top.g(name));

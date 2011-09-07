@@ -35,7 +35,7 @@ namespace NLS {
 		class PNGProperty;
 		class SoundProperty;
 		//And now lets define them somehow
-		class Header {
+		class Header {//Do we even need a header?
 		public:
 			Header(File* file);
 			string ident;
@@ -43,7 +43,7 @@ namespace NLS {
 			uint32_t fileStart;
 			int16_t version;
 			string copyright;
-			uint32_t versionHash;
+			uint32_t versionHash;//Do we need this?
 		};
 		class Directory {
 		public:
@@ -52,9 +52,10 @@ namespace NLS {
 		class File {
 		public:
 			File(const string& name);
+			File(const string& name, bool beta);
 			ifstream file;
 			uint32_t Hash(uint16_t enc, uint16_t real);
-			uint16_t version;
+			uint16_t version;//Do we need this?
 			Header* head;
 		};
 		class Image {
