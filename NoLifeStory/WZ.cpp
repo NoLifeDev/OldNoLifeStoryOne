@@ -244,8 +244,12 @@ NLS::WZ::File::File(const string& name, bool beta) {//TODO: Finish this!
 		for (Version = 0; Version < 256; Version++) {
 			VersionHash = Hash(EncVersion, Version);
 			if (VersionHash) {
-				file.seekg(c, ios_base::beg);
+				file.clear();
+				file.seekg(c);
 				uint32_t offset = ReadOffset(this);
+				if (offset > fileSize) {
+					continue;
+				}
 				file.seekg(offset);
 				uint8_t a = Read<uint8_t>(file);
 				if(a != 0x73) {
