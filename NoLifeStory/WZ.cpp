@@ -129,7 +129,7 @@ inline string ReadStringOffset(ifstream& file, uint32_t offset) {
 #pragma endregion
 
 #pragma region Parsing Stuff
-bool NLS::WZ::Init(string path) {
+bool NLS::WZ::Init(const string& path) {
 	Path = path;
 	Top.data = new NodeData();
 	new File("Base");
@@ -151,7 +151,7 @@ bool NLS::WZ::Init(string path) {
 	return true;
 }
 
-NLS::WZ::File::File(string name) {
+NLS::WZ::File::File(const string& name) {
 	string filename = Path+name+".wz";
 	file.open(filename, file.in|file.binary);
 	C("WZ") << "Loading file: " << filename << Endl;
@@ -203,7 +203,7 @@ NLS::WZ::Header::Header(File* file) {
 	version = Read<int16_t>(file);
 }
 
-NLS::WZ::Directory::Directory(File* file, Node n) {
+NLS::WZ::Directory::Directory(File* file, Node& n) {
 	int32_t count = ReadCInt(file->file);
 	set<pair<string, uint32_t>> dirs;
 	for (int i = 0; i < count; i++) {
@@ -243,7 +243,7 @@ NLS::WZ::Directory::Directory(File* file, Node n) {
 	delete this;
 }
 
-NLS::WZ::Image::Image(File* file, Node n, uint32_t offset) {
+NLS::WZ::Image::Image(File* file, Node& n, uint32_t offset) {
 	this->n = n;
 	n.data->image = this;
 	this->offset = offset;
@@ -274,7 +274,7 @@ void NLS::WZ::Image::Parse() {
 	delete this;
 }
 
-NLS::WZ::SubProperty::SubProperty(File* file, Node n, uint32_t offset) {
+NLS::WZ::SubProperty::SubProperty(File* file, Node& n, uint32_t offset) {
 	int32_t count = ReadCInt(file->file);
 	for (int i = 0; i < count; i++) {
 		string name = ReadString(file->file, offset);
@@ -317,7 +317,7 @@ NLS::WZ::SubProperty::SubProperty(File* file, Node n, uint32_t offset) {
 	delete this;
 }
 
-NLS::WZ::ExtendedProperty::ExtendedProperty(File* file, Node n, uint32_t offset, uint32_t eob) {
+NLS::WZ::ExtendedProperty::ExtendedProperty(File* file, Node& n, uint32_t offset, uint32_t eob) {
 	string name;
 	uint8_t a = Read<uint8_t>(file);
 	if (a == 0x1B) {

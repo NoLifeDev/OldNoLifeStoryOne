@@ -4,7 +4,15 @@
 ////////////////////////////////////////////////////
 
 namespace NLS {
-	void Init(const vector<string>& args);
-	bool Loop();
-	void Unload();
+	class SpriteData {
+	public:
+		GLuint texture;
+	};
+	class Sprite {
+	public:
+		void Draw(int x, int y);
+		void Draw(int x, int y, double rotation);
+	private:
+		SpriteData* data;
+	};
 };

@@ -9,8 +9,8 @@ namespace NLS {
 		Console();
 		~Console();
 		void Loop();
-		void HandleCommand(string command);
-		void Push(string str);
+		void HandleCommand(const string& command);
+		void Push(const string& str);
 		void Toggle();
 	private:
 		sf::RenderWindow* window;
@@ -44,7 +44,7 @@ namespace NLS {
 	private:
 		stringstream line;
 	};
-	inline Stream& C(string type) {
+	inline Stream& C(const string& type) {
 		static Stream s;
 		s << Endl;
 		s << type << ": ";

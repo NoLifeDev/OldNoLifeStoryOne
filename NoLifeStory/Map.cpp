@@ -8,7 +8,7 @@ NLS::Node NLS::Map::node;
 string NLS::Map::nextmap;
 string NLS::Map::nextportal;
 
-void NLS::Map::Load(string id, string portal) {
+void NLS::Map::Load(const string& id, const string& portal) {
 	nextmap = id;
 	nextportal = portal;
 }

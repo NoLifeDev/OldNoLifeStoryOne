@@ -64,12 +64,12 @@ namespace NLS {
 		};
 		class Directory {
 		public:
-			Directory(File* file, Node n);
+			Directory(File* file, Node& n);
 			File* file;
 		};
 		class File {
 		public:
-			File(string name);
+			File(const string& name);
 			ifstream file;
 			uint32_t Hash(uint16_t enc, uint16_t real);
 			uint16_t version;
@@ -77,7 +77,7 @@ namespace NLS {
 		};
 		class Image {
 		public:
-			Image(File* file, Node n, uint32_t offset);
+			Image(File* file, Node& n, uint32_t offset);
 			void Parse();
 			Node n;
 			string name;
@@ -86,14 +86,14 @@ namespace NLS {
 		};
 		class SubProperty {
 		public:
-			SubProperty(File* file, Node n, uint32_t offset);
+			SubProperty(File* file, Node& n, uint32_t offset);
 		};
 		class ExtendedProperty {
 		public:
-			ExtendedProperty(File* file, Node n, uint32_t offset, uint32_t eob);
+			ExtendedProperty(File* file, Node& n, uint32_t offset, uint32_t eob);
 		};
 		//Functions
-		bool Init(string path);
+		bool Init(const string& path);
 	}
 	class NodeData {
 	public:

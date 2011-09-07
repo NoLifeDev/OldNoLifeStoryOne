@@ -99,13 +99,13 @@ void NLS::Console::Loop() {
 		sf::Shape s = sf::Shape::Line(0, window->GetHeight()-12, window->GetWidth(), window->GetHeight()-12, 1, sf::Color::White);
 		window->Draw(s);
 		window->Display();
-		sf::Sleep(max(0.01-window->GetFrameTime(), 0.));
+		sf::Sleep(max(0.02-window->GetFrameTime(), 0.));
 	}
 	delete font;
 	delete window;
 }
 
-void NLS::Console::HandleCommand(string str) {
+void NLS::Console::HandleCommand(const string& str) {
 	istringstream iss(str);
 	vector<string> command;
 	copy(istream_iterator<string>(iss), istream_iterator<string>(), back_inserter<vector<string>>(command));
@@ -115,7 +115,7 @@ void NLS::Console::HandleCommand(string str) {
 	//Do stuff :D
 }
 
-void NLS::Console::Push(string str) {
+void NLS::Console::Push(const string& str) {
 	m.Lock();
 	strs.push_back(str);
 	m.Unlock();

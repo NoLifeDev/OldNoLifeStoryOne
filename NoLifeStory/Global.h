@@ -6,6 +6,7 @@
 
 #include "..\SuperGlobal.h"
 #include "Utilities.h"
+#include "Sprite.h"
 #include "WZ.h"
 #include "Graphics.h"
 #include "Foothold.h"

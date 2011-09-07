@@ -4,7 +4,7 @@
 ////////////////////////////////////////////////////
 #include "Global.h"
 
-void NLS::Init(vector<string> args) {
+void NLS::Init(const vector<string>& args) {
 	C("INFO") << "Initializing NoLifeStory" << Endl;
 	Network::Init();
 	Time.Reset();
@@ -22,8 +22,8 @@ bool NLS::Loop() {
 	static double fps(0);
 	fps = fps*0.99 + (1/max(Time.delta, 0.001))*0.01;
 	window->SetTitle("NoLifeStory::FrameRate = "+tostring((int)fps));
-	if (Time.delta < 0.01) {
-		sf::Sleep(0.01-Time.delta);
+	if (Time.delta < 0.02) {
+		sf::Sleep(0.02-Time.delta);
 	}
 	sf::Event e;
 	while (window->GetEvent(e)) {
