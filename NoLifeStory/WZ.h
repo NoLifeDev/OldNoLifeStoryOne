@@ -27,23 +27,6 @@ namespace NLS {
 	namespace WZ {
 		extern Node Top;
 		extern Node Empty;
-		enum PropertyType {
-			PropUnknown = 0,
-			PropPrim = 400,
-			PropNull = 401,
-			PropUnsignedShort = 402,
-			PropCompressedInt = 403,
-			PropVector = 404,
-			PropFloat = 405,
-			PropDouble = 406,
-			PropString = 407,
-			PropUOL = 408,
-			PropSub = 500,
-			PropCanvas = 501,
-			PropConvex = 502,
-			PropPNG = 700,
-			PropMP3 = 800
-		};
 		class Header;
 		class Directory;
 		class File;
@@ -65,7 +48,6 @@ namespace NLS {
 		class Directory {
 		public:
 			Directory(File* file, Node& n);
-			File* file;
 		};
 		class File {
 		public:
