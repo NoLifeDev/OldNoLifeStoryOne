@@ -5,12 +5,12 @@
 #include "Global.h"
 
 void NLS::Init(const vector<string>& args) {
-	C("INFO") << "Initializing NoLifeStory" << Endl;
+	C("INFO") << "Initializing NoLifeStory" << endl;
 	Network::Init();
 	Time.Reset();
 	WZ::Init(args[1]);
 	Time.Step();
-	C("WZ") << "Directories initialized in " << floor(Time.tdelta*1000) << " ms" << Endl;
+	C("WZ") << "Directories initialized in " << floor(Time.tdelta*1000) << " ms" << endl;
 	Time.Reset();
 	Graphics::Init();
 	Map::Load("10000", "");

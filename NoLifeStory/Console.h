@@ -24,7 +24,6 @@ namespace NLS {
 		bool toggle, show;
 	};
 	extern Console* console;
-	class Endl_ {} extern Endl;
 	class Stream {
 	public:
 		template <class T>
@@ -32,8 +31,7 @@ namespace NLS {
 			line << v;
 			return *this;
 		}
-		template <>
-		Stream& operator << <Endl_> (Endl_) {
+		Stream& operator << (ostream&(ostream&)) {
 			string s = line.str();
 			if (!s.empty()) {
 				console->Push(s);
@@ -46,7 +44,7 @@ namespace NLS {
 	};
 	inline Stream& C(const string& type) {
 		static Stream s;
-		s << Endl;
+		s << endl;
 		s << type << ": ";
 		return s;
 	}

@@ -45,13 +45,13 @@ inline int32_t ReadCInt(ifstream& file) {
 
 inline uint32_t ReadOffset(NLS::WZ::File* file) {
 	uint32_t p = file->file.tellg();
-	p = (p-file->head->fileStart)^0xFFFFFFFF;
-	p *= file->head->versionHash;
+	p = (p-file->fileStart)^0xFFFFFFFF;
+	p *= VersionHash;
 	p -= OffsetKey;
 	p = (p<<(p&0x1F))|(p>>(32-p&0x1F));
 	uint32_t more = Read<uint32_t>(file);
 	p ^= more;
-	p += file->head->fileStart*2;
+	p += file->fileStart*2;
 	return p;
 }
 
@@ -61,7 +61,7 @@ inline string ReadEncString(ifstream& file) {
 		return string();
 	} else if (slen > 0) {
 		int32_t len;
-		if (slen == 0x7F) {
+		if (slen == 127) {
 			len = Read<int32_t>(file);
 		} else {
 			len = slen;
@@ -102,6 +102,30 @@ inline string ReadEncString(ifstream& file) {
 	}
 }
 
+inline void ReadEncFast(ifstream& file) {
+	int8_t slen = Read<int8_t>(file);
+	if (slen == 0) {return;}
+	if (slen > 0) {
+		int32_t len;
+		if (slen == 127) {
+			len = Read<int32_t>(file);
+		} else {
+			len = slen;
+		}
+		if (len <= 0) {return;}
+		file.seekg(len*2, ios_base::cur);
+	} else {
+		int32_t len;
+		if (slen == -128) {
+			len = Read<int32_t>(file);
+		} else {
+			len = -slen;
+		}
+		if (len <= 0) {return;}
+		file.seekg(len, ios_base::cur);
+	}
+}
+
 inline string ReadString(ifstream& file, uint32_t offset) {
 	uint8_t a = Read<uint8_t>(file);
 	switch (a) {
@@ -135,17 +159,17 @@ inline string ReadStringOffset(ifstream& file, uint32_t offset) {
 
 #pragma region Parsing Stuff
 bool NLS::WZ::Init(const string& path) {
-	memset(GMSKey, 0, 0xFFFF);
+	memset(BMSKey, 0, 0xFFFF);
 	Path = path;
 	Top.data = new NodeData();
 	ifstream test(path+"Data.wz");
 	bool beta = test.is_open();
 	test.close();
 	if (beta) {
-		C("WZ") << "Loading beta WZ file structure" << Endl;
+		C("WZ") << "Loading beta WZ file structure" << endl;
 		new File("Data", true);
 	} else {
-		C("WZ") << "Loading standard WZ file structure" << Endl;
+		C("WZ") << "Loading standard WZ file structure" << endl;
 		new File("Base", false);
 		for (auto it = Top.Begin(); it != Top.End(); it++) {
 			new File(it->first);
@@ -157,42 +181,89 @@ bool NLS::WZ::Init(const string& path) {
 NLS::WZ::File::File(const string& name) {
 	string filename = Path+name+".wz";
 	file.open(filename, file.in|file.binary);
-	C("WZ") << "Loading file: " << filename << Endl;
+	C("WZ") << "Loading file: " << filename << endl;
 	if (!file.is_open()) {
-		C("ERROR") << "Failed to load WZ file" << Endl;
+		C("ERROR") << "Failed to load WZ file" << endl;
 		throw(273);
 	}
 	Files.insert(this);
-	head = new Header(this);
-	if (head->version != EncVersion) {
-		C("ERROR") << "Version of WZ file does not match existing files" << Endl;
+	ident.resize(4);
+	file.read(const_cast<char*>(ident.c_str()), 4);
+	fileSize = Read<uint64_t>(file);
+	fileStart = Read<uint32_t>(file);
+	file >> copyright;
+	file.seekg(fileStart);
+	int16_t eversion = Read<int16_t>(file);
+	if (eversion != EncVersion) {
+		C("ERROR") << "Version of WZ file does not match existing files" << endl;
 	}
-	head->versionHash = VersionHash;
-	version = Version;
 	new Directory(this, Top.g(name));
 }
 NLS::WZ::File::File(const string& name, bool beta) {//TODO: Finish this!
 	string filename = Path+name+".wz";
 	file.open(filename, file.in|file.binary);
-	C("WZ") << "Loading file: " << filename << Endl;
+	C("WZ") << "Loading file: " << filename << endl;
 	if (!file.is_open()) {
-		C("ERROR") << "Failed to load WZ file" << Endl;
+		C("ERROR") << "Failed to load WZ file" << endl;
 		throw(273);
 	}
 	Files.insert(this);
-	head = new Header(this);
-	version = 0;
-	for (uint16_t i = 0; i < 256; i++) {
-		uint32_t vh = Hash(head->version, i);
-		if (vh) {
-			if (version) {
-				C("ERROR") << "Conflicting WZ versions: " << version << " and " << i << Endl;
-				throw(273);
-			}
-			head->versionHash = vh;
-			version = i;
+	ident.resize(4);
+	file.read(const_cast<char*>(ident.c_str()), 4);
+	fileSize = Read<uint64_t>(file);
+	fileStart = Read<uint32_t>(file);
+	file >> copyright;
+	file.seekg(fileStart);
+	EncVersion = Read<int16_t>(file);
+	int32_t count = ReadCInt(file);
+	uint32_t c = 0;
+	for (int k = 0; k < count; k++) {
+		uint8_t type = Read<uint8_t>(file);
+		if (type == 3) {
+			ReadEncFast(file);
+			ReadCInt(file);
+			ReadCInt(file);
+			Read<uint32_t>(file);
+			continue;
+		} else if (type == 4) {
+			ReadEncFast(file);
+			ReadCInt(file);
+			ReadCInt(file);
+			c = file.tellg();
+			break;
+		} else {
+			C("ERROR") << "Malformed WZ structure" << endl;
+			throw(273);
 		}
 	}
+	if (c == 0) {
+		C("ERROR") << "Unable to find a top level .img for hash verification" << endl;
+	}
+	for (uint8_t j = 0; j < 2; j++) {
+		WZKey = WZKeys[j];
+		for (Version = 0; Version < 256; Version++) {
+			VersionHash = Hash(EncVersion, Version);
+			if (VersionHash) {
+				file.seekg(c, ios_base::beg);
+				uint32_t offset = ReadOffset(this);
+				file.seekg(offset);
+				uint8_t a = Read<uint8_t>(file);
+				if(a != 0x73) {
+					continue;
+				}
+				string s = ReadEncString(file);
+				if (s != "Property") {
+					continue;
+				}
+				C("WZ") << "Detected WZ version: " << Version << endl;
+				goto wzdone;
+			}
+		}
+	}
+	C("ERROR") << "Unable to determine WZ version" << endl;
+	throw(273);
+	wzdone:
+	file.seekg(fileStart+2);
 	if (beta) {
 		new Directory(this, Top);
 	} else {
@@ -215,17 +286,6 @@ uint32_t NLS::WZ::File::Hash(uint16_t enc, uint16_t real) {
 	}
 }
 
-NLS::WZ::Header::Header(File* file) {
-	char s1[4];
-	file->file.read(s1, 4);
-	ident.assign(s1, 4);
-	fileSize = Read<uint64_t>(file);
-	fileStart = Read<uint32_t>(file);
-	file->file >> copyright;
-	file->file.seekg(fileStart);
-	version = Read<int16_t>(file);
-}
-
 NLS::WZ::Directory::Directory(File* file, Node& n) {
 	int32_t count = ReadCInt(file->file);
 	set<pair<string, uint32_t>> dirs;
@@ -238,7 +298,7 @@ NLS::WZ::Directory::Directory(File* file, Node& n) {
 		} else if (type == 2) {
 			int32_t s = Read<int32_t>(file);
 			uint32_t p = file->file.tellg();
-			file->file.seekg(file->head->fileStart+s);
+			file->file.seekg(file->fileStart+s);
 			type = Read<uint8_t>(file);
 			name = ReadEncString(file->file);
 			file->file.seekg(p);
@@ -247,6 +307,7 @@ NLS::WZ::Directory::Directory(File* file, Node& n) {
 		} else if (type == 4) {
 			name = ReadEncString(file->file);
 		} else {
+			C("ERROR") << "Wat?" << endl;
 			continue;
 		}
 		int32_t fsize = ReadCInt(file->file);
@@ -286,7 +347,7 @@ void NLS::WZ::Image::Parse() {
 		string s = n;
 		if (s.substr(0, 5) == "|UOL|") {
 			s.erase(0, 5);
-			C("WZ") << "Resolving UOL: " << s << Endl;
+			C("WZ") << "Resolving UOL: " << s << endl;
 			//TODO: Actually resolve the UOL
 		}
 		for (auto it = n.Begin(); it != n.End(); it++) {
@@ -333,7 +394,7 @@ NLS::WZ::SubProperty::SubProperty(File* file, Node& n, uint32_t offset) {
 				break;
 			}
 		default:
-			C("ERROR") << "Unknown Property type" << Endl;
+			C("ERROR") << "Unknown Property type" << endl;
 			throw(273);
 		}
 	}
@@ -388,11 +449,11 @@ NLS::WZ::ExtendedProperty::ExtendedProperty(File* file, Node& n, uint32_t offset
 				break;
 			}
 		default:
-			C("ERROR") << "Unknown UOL type" << Endl;
+			C("ERROR") << "Unknown UOL type" << endl;
 			throw(273);
 		}
 	} else {
-		C("ERROR") << "Unknown ExtendedProperty type" << Endl;
+		C("ERROR") << "Unknown ExtendedProperty type" << endl;
 		throw(273);
 	}
 	delete this;

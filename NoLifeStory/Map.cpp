@@ -14,7 +14,7 @@ void NLS::Map::Load(const string& id, const string& portal) {
 }
 
 void NLS::Map::Load() {
-	C("INFO") << "Loading map " << nextmap << Endl;
+	C("INFO") << "Loading map " << nextmap << endl;
 	char zone;
 	if (nextmap == "login") {
 		//Uh....
@@ -25,7 +25,7 @@ void NLS::Map::Load() {
 		node = WZ::Top["Map"]["Map"][string("Map")+zone][nextmap];
 	}
 	string bgm = node["info"]["bgm"];
-	C("INFO") << "Background music: " << bgm << Endl;
+	C("INFO") << "Background music: " << bgm << endl;
 	Foothold::Unload();
 	Foothold::Load(node);
 }

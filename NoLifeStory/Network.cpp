@@ -8,8 +8,8 @@ sf::TcpSocket NLS::Network::Socket;
 
 void NLS::Network::Init() {
 	if (Socket.Connect("141.157.161.118", 8484, 3) != sf::Socket::Done) {
-		C("ERROR") << "Failed to connect to server at 141.157.161.118:8484" << Endl;
+		C("ERROR") << "Failed to connect to server at 141.157.161.118:8484" << endl;
 	} else {
-		C("INFO") << "Connected to LoginServer at 141.157.161.118:8484" << Endl;
+		C("INFO") << "Connected to LoginServer at 141.157.161.118:8484" << endl;
 	}
 }

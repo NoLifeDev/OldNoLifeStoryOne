@@ -27,7 +27,6 @@ namespace NLS {
 	namespace WZ {
 		extern Node Top;
 		extern Node Empty;
-		class Header;
 		class Directory;
 		class File;
 		class Image;
@@ -35,16 +34,6 @@ namespace NLS {
 		class PNGProperty;
 		class SoundProperty;
 		//And now lets define them somehow
-		class Header {//Do we even need a header?
-		public:
-			Header(File* file);
-			string ident;
-			uint64_t fileSize;
-			uint32_t fileStart;
-			int16_t version;
-			string copyright;
-			uint32_t versionHash;//Do we need this?
-		};
 		class Directory {
 		public:
 			Directory(File* file, Node& n);
@@ -55,8 +44,10 @@ namespace NLS {
 			File(const string& name, bool beta);
 			ifstream file;
 			uint32_t Hash(uint16_t enc, uint16_t real);
-			uint16_t version;//Do we need this?
-			Header* head;
+			string ident;
+			uint64_t fileSize;
+			uint32_t fileStart;
+			string copyright;
 		};
 		class Image {
 		public:

@@ -6,8 +6,6 @@
 
 NLS::Console* NLS::console;
 
-NLS::Endl_ NLS::Endl;
-
 NLS::Console::Console() {
 	shutdown = false;
 	toggle = false;

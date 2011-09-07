@@ -9,7 +9,7 @@ set <NLS::Foothold*> NLS::footholds;
 void NLS::Foothold::Load(Node n) {
 	n = n["foothold"];
 	if (!n) {
-		C("ERROR") << "No foothold node" << Endl;
+		C("ERROR") << "No foothold node" << endl;
 		throw(273);
 	}
 	for (auto i = n.Begin(); i != n.End(); i++) {
