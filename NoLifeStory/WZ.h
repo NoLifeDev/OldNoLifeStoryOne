@@ -19,6 +19,7 @@ namespace NLS {
 		operator string();
 		operator double();
 		operator int();
+		operator Sprite();
 		Node& operator= (const string&);
 		Node& operator= (const double&);
 		Node& operator= (const int&);
@@ -27,17 +28,7 @@ namespace NLS {
 	namespace WZ {
 		extern Node Top;
 		extern Node Empty;
-		class Directory;
-		class File;
-		class Image;
-		class SubProperty;
-		class PNGProperty;
-		class SoundProperty;
 		//And now lets define them somehow
-		class Directory {
-		public:
-			Directory(File* file, Node n);
-		};
 		class File {
 		public:
 			File(const string& name);
@@ -48,6 +39,10 @@ namespace NLS {
 			uint64_t fileSize;
 			uint32_t fileStart;
 			string copyright;
+		};
+		class Directory {
+		public:
+			Directory(File* file, Node n);
 		};
 		class Image {
 		public:
@@ -66,6 +61,14 @@ namespace NLS {
 		public:
 			ExtendedProperty(File* file, Node n, uint32_t offset, uint32_t eob);
 		};
+		class PNGProperty {
+		public:
+			PNGProperty(File* file);
+			void Parse();
+		};
+		class SoundProperty {
+		public:
+		};
 		//Functions
 		bool Init(const string& path);
 	}
@@ -75,6 +78,7 @@ namespace NLS {
 		string stringValue;
 		double floatValue;
 		int intValue;
+		Sprite sprite;
 		Node parent;
 		string name;
 		map <string, Node> children;

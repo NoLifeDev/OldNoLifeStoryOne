@@ -431,7 +431,6 @@ NLS::WZ::ExtendedProperty::ExtendedProperty(File* file, Node n, uint32_t offset,
 			file->file.seekg(2, ios_base::cur);
 			new SubProperty(file, n, offset);
 		}
-		//TODO: Do something with the png property
 	} else if (name == "Shape2D#Vector2D") {
 		n.g("x") = ReadCInt(file->file);
 		n.g("y") = ReadCInt(file->file);
@@ -547,6 +546,12 @@ NLS::Node::operator int() {
 		return 0;
 	}
 	return data->intValue;
+}
+
+NLS::Node::operator Sprite() {
+	if (!data) {
+		return Sprite();
+	}
 }
 
 NLS::Node& NLS::Node::operator= (const string& v) {
