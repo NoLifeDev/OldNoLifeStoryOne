@@ -290,7 +290,7 @@ uint32_t NLS::WZ::File::Hash(uint16_t enc, uint16_t real) {
 	}
 }
 
-NLS::WZ::Directory::Directory(File* file, Node& n) {
+NLS::WZ::Directory::Directory(File* file, Node n) {
 	int32_t count = ReadCInt(file->file);
 	set<pair<string, uint32_t>> dirs;
 	for (int i = 0; i < count; i++) {
@@ -312,16 +312,19 @@ NLS::WZ::Directory::Directory(File* file, Node& n) {
 			name = ReadEncString(file->file);
 		} else {
 			C("ERROR") << "Wat?" << endl;
-			continue;
+			throw(273);
 		}
 		int32_t fsize = ReadCInt(file->file);
 		int32_t checksum = ReadCInt(file->file);
 		uint32_t offset = ReadOffset(file);
 		if (type == 3) {
 			dirs.insert(pair<string, uint32_t>(name, offset));
-		} else {
+		} else if (type == 4) {
 			name.erase(name.size()-4);
 			new Image(file, n.g(name), offset);
+		} else {
+			C("ERROR") << "Wat?" << endl;
+			throw(273);
 		}
 	}
 	for (auto it = dirs.begin(); it != dirs.end(); it++) {
@@ -331,7 +334,7 @@ NLS::WZ::Directory::Directory(File* file, Node& n) {
 	delete this;
 }
 
-NLS::WZ::Image::Image(File* file, Node& n, uint32_t offset) {
+NLS::WZ::Image::Image(File* file, Node n, uint32_t offset) {
 	this->n = n;
 	n.data->image = this;
 	this->offset = offset;
@@ -362,7 +365,7 @@ void NLS::WZ::Image::Parse() {
 	delete this;
 }
 
-NLS::WZ::SubProperty::SubProperty(File* file, Node& n, uint32_t offset) {
+NLS::WZ::SubProperty::SubProperty(File* file, Node n, uint32_t offset) {
 	int32_t count = ReadCInt(file->file);
 	for (int i = 0; i < count; i++) {
 		string name = ReadString(file->file, offset);
@@ -405,7 +408,7 @@ NLS::WZ::SubProperty::SubProperty(File* file, Node& n, uint32_t offset) {
 	delete this;
 }
 
-NLS::WZ::ExtendedProperty::ExtendedProperty(File* file, Node& n, uint32_t offset, uint32_t eob) {
+NLS::WZ::ExtendedProperty::ExtendedProperty(File* file, Node n, uint32_t offset, uint32_t eob) {
 	string name;
 	uint8_t a = Read<uint8_t>(file);
 	if (a == 0x1B) {

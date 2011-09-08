@@ -36,7 +36,7 @@ namespace NLS {
 		//And now lets define them somehow
 		class Directory {
 		public:
-			Directory(File* file, Node& n);
+			Directory(File* file, Node n);
 		};
 		class File {
 		public:
@@ -51,7 +51,7 @@ namespace NLS {
 		};
 		class Image {
 		public:
-			Image(File* file, Node& n, uint32_t offset);
+			Image(File* file, Node n, uint32_t offset);
 			void Parse();
 			Node n;
 			string name;
@@ -60,11 +60,11 @@ namespace NLS {
 		};
 		class SubProperty {
 		public:
-			SubProperty(File* file, Node& n, uint32_t offset);
+			SubProperty(File* file, Node n, uint32_t offset);
 		};
 		class ExtendedProperty {
 		public:
-			ExtendedProperty(File* file, Node& n, uint32_t offset, uint32_t eob);
+			ExtendedProperty(File* file, Node n, uint32_t offset, uint32_t eob);
 		};
 		//Functions
 		bool Init(const string& path);
