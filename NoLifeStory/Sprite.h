@@ -9,14 +9,13 @@ namespace NLS {
 		GLuint texture;
 		GLuint width, height;
 		GLfloat twidth, theight;
-		GLuint originx, originy;
+		GLint originx, originy;
 		bool loaded;
-		class WZ::PNGProperty* png;
+		void* png;
 	};
 	class Sprite {
 	public:
 		void Draw(int x, int y, bool flipped = false, float alpha = 1, float rotation = 0);
-	private:
 		void GetTexture();
 		SpriteData* data;
 	};

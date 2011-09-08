@@ -28,6 +28,7 @@
 //////////////////////////////////////////////////////////////////////////
 #ifdef _WIN32
 #define NLS_WINDOWS
+#include <Windows.h>
 #elif defined(UNIX)
 #define NLS_UNIX
 #elif defined(MAC)
@@ -41,9 +42,11 @@
 #include <SFML/Config.hpp>
 #include <SFML/Graphics.hpp>
 #include <SFML/Network.hpp>
-#include <SFML/OpenGL.hpp>
 #include <SFML/System.hpp>
 #include <SFML/Window.hpp>
+
+//OpenGL
+#include <glew.h>
 
 //Zlib
 #include <zlib.h>

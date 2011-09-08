@@ -63,8 +63,14 @@ namespace NLS {
 		};
 		class PNGProperty {
 		public:
-			PNGProperty(File* file);
+			PNGProperty(File* file, Sprite spr);
 			void Parse();
+			File* file;
+			Sprite sprite;
+			int32_t format;
+			uint8_t format2;
+			int32_t length;
+			uint32_t offset;
 		};
 		class SoundProperty {
 		public:

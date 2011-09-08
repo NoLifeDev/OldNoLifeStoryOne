@@ -51,7 +51,9 @@ void NLS::Sprite::GetTexture() {
 			glBindTexture(GL_TEXTURE_2D, NULL);
 			return;
 		}
-		//TODO: Actually load the texture
+		((WZ::PNGProperty*)data->png)->Parse();
+		data->loaded = true;
+	} else {
+		glBindTexture(GL_TEXTURE_2D, data->texture);
 	}
-	glBindTexture(GL_TEXTURE_2D, data->texture);
 }
