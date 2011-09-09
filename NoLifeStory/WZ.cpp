@@ -18,6 +18,46 @@ int16_t EncVersion;
 uint16_t Version;
 uint32_t VersionHash;
 
+#pragma region ZLib Stuff
+uint8_t* Decompress(uint8_t* inBuffer, uint32_t inLen, uint32_t outLen){
+	const uint32_t inChunk = 4096;
+	uint32_t inBufferIndex = 0;
+	const uint32_t outChunk = 4096;
+	uint32_t outBufferIndex = 0;
+	uint8_t* outBuffer = new uint8_t[outLen];
+	int err = Z_OK;
+	z_stream strm;
+	strm.next_in = nullptr;
+	strm.avail_in = 0;
+	strm.opaque = nullptr;
+	strm.zfree = nullptr;
+	strm.zalloc = nullptr;
+	inflateInit(&strm);
+	do {
+		strm.next_in = inBuffer+inBufferIndex;
+		strm.avail_in = (inLen-inBufferIndex > inChunk ? inChunk : inLen-inBufferIndex);
+		inBufferIndex += strm.avail_in;
+		if (!strm.avail_in) {
+			break;
+		}
+		strm.next_out = outBuffer;
+		strm.avail_out = outLen;
+		err = inflate(&strm, Z_NO_FLUSH);
+		switch(err){
+		case Z_NEED_DICT:
+		case Z_DATA_ERROR:
+		case Z_MEM_ERROR:
+		case Z_BUF_ERROR:
+			NLS::C("ERROR") << "I hate zlib!" << endl;
+			throw(273);
+			break;
+		}
+	} while (err != Z_STREAM_END);
+	inflateEnd(&strm);
+	return outBuffer;
+}
+#pragma endregion
+
 #pragma region File Reading Stuff
 template <class T>
 inline T Read(ifstream& file) {
@@ -175,6 +215,7 @@ bool NLS::WZ::Init(const string& path) {
 			new File(it->first);
 		}
 	}
+	C("WZ") << "Great spot to break" << endl;
 	return true;
 }
 
@@ -290,7 +331,7 @@ uint32_t NLS::WZ::File::Hash(uint16_t enc, uint16_t real) {
 	}
 }
 
-NLS::WZ::Directory::Directory(File* file, Node& n) {
+NLS::WZ::Directory::Directory(File* file, Node n) {
 	int32_t count = ReadCInt(file->file);
 	set<pair<string, uint32_t>> dirs;
 	for (int i = 0; i < count; i++) {
@@ -312,16 +353,19 @@ NLS::WZ::Directory::Directory(File* file, Node& n) {
 			name = ReadEncString(file->file);
 		} else {
 			C("ERROR") << "Wat?" << endl;
-			continue;
+			throw(273);
 		}
 		int32_t fsize = ReadCInt(file->file);
 		int32_t checksum = ReadCInt(file->file);
 		uint32_t offset = ReadOffset(file);
 		if (type == 3) {
 			dirs.insert(pair<string, uint32_t>(name, offset));
-		} else {
+		} else if (type == 4) {
 			name.erase(name.size()-4);
 			new Image(file, n.g(name), offset);
+		} else {
+			C("ERROR") << "Wat?" << endl;
+			throw(273);
 		}
 	}
 	for (auto it = dirs.begin(); it != dirs.end(); it++) {
@@ -331,7 +375,7 @@ NLS::WZ::Directory::Directory(File* file, Node& n) {
 	delete this;
 }
 
-NLS::WZ::Image::Image(File* file, Node& n, uint32_t offset) {
+NLS::WZ::Image::Image(File* file, Node n, uint32_t offset) {
 	this->n = n;
 	n.data->image = this;
 	this->offset = offset;
@@ -362,7 +406,7 @@ void NLS::WZ::Image::Parse() {
 	delete this;
 }
 
-NLS::WZ::SubProperty::SubProperty(File* file, Node& n, uint32_t offset) {
+NLS::WZ::SubProperty::SubProperty(File* file, Node n, uint32_t offset) {
 	int32_t count = ReadCInt(file->file);
 	for (int i = 0; i < count; i++) {
 		string name = ReadString(file->file, offset);
@@ -405,7 +449,7 @@ NLS::WZ::SubProperty::SubProperty(File* file, Node& n, uint32_t offset) {
 	delete this;
 }
 
-NLS::WZ::ExtendedProperty::ExtendedProperty(File* file, Node& n, uint32_t offset, uint32_t eob) {
+NLS::WZ::ExtendedProperty::ExtendedProperty(File* file, Node n, uint32_t offset, uint32_t eob) {
 	string name;
 	uint8_t a = Read<uint8_t>(file);
 	if (a == 0x1B) {
@@ -428,7 +472,8 @@ NLS::WZ::ExtendedProperty::ExtendedProperty(File* file, Node& n, uint32_t offset
 			file->file.seekg(2, ios_base::cur);
 			new SubProperty(file, n, offset);
 		}
-		//TODO: Do something with the png property
+		n.data->sprite.data = new SpriteData;
+		n.data->sprite.data->png = new PNGProperty(file, n.data->sprite);
 	} else if (name == "Shape2D#Vector2D") {
 		n.g("x") = ReadCInt(file->file);
 		n.g("y") = ReadCInt(file->file);
@@ -461,6 +506,89 @@ NLS::WZ::ExtendedProperty::ExtendedProperty(File* file, Node& n, uint32_t offset
 		throw(273);
 	}
 	delete this;
+}
+
+NLS::WZ::PNGProperty::PNGProperty(File* file, Sprite spr) {
+	this->file = file;
+	sprite = spr;
+	sprite.data->width = ReadCInt(file->file);
+	sprite.data->height = ReadCInt(file->file);
+	format = ReadCInt(file->file);
+	format2 = Read<uint8_t>(file);
+	file->file.seekg(4, ios_base::cur);
+	length = Read<int32_t>(file);
+	if (length <= 0) {
+		C("ERROR") << "What sort of shit is this?" << endl;
+		throw(273);
+	}
+	offset = file->file.tellg();
+	offset++;
+}
+
+void NLS::WZ::PNGProperty::Parse() {
+	uint8_t *data = new uint8_t[length];
+	file->file.seekg(offset);
+	file->file.read((char*)data, length);
+	int32_t f = format+format2;
+	glGenTextures(1, &sprite.data->texture);
+	glBindTexture(GL_TEXTURE_2D, sprite.data->texture);
+	switch (f) {
+	case 1:
+		{
+			uint32_t len = 2*sprite.data->width*sprite.data->height;
+			uint8_t *sub = Decompress(data, length, len);
+			uint8_t *pixels = new uint8_t[len*2];
+			for (uint32_t i = 0; i < len; i++) {
+				pixels[i*2] = sub[i]&0x0F|(sub[i]&0x0F<<4);
+				pixels[i*2+1] = sub[i]&0xF0|(sub[i]&0xF0>>4);
+			}
+			glTexImage2D(GL_TEXTURE_2D, 0, 4, sprite.data->width, sprite.data->height, 0, GL_BGRA, GL_UNSIGNED_BYTE, pixels);
+			break;
+		}
+	case 2:
+		{
+			uint32_t len = 4*sprite.data->width*sprite.data->height;
+			uint8_t *pixels = Decompress(data, length, len);
+			glTexImage2D(GL_TEXTURE_2D, 0, 4, sprite.data->width, sprite.data->height, 0, GL_BGRA, GL_UNSIGNED_BYTE, pixels);
+			break;
+		}
+	case 513:
+		{
+			uint32_t len = 2*sprite.data->width*sprite.data->height;
+			uint8_t *pixels = Decompress(data, length, len);
+			glTexImage2D(GL_TEXTURE_2D, 0, 3, sprite.data->width, sprite.data->height, 0, GL_BGR, GL_UNSIGNED_SHORT_5_6_5, pixels);
+			break;
+		}
+	case 517:
+		{
+			uint32_t len = sprite.data->width*sprite.data->height/128;
+			uint8_t *sub = Decompress(data, length, len);
+			uint8_t *pixels = new uint8_t[len*512];
+			uint32_t t = 0;
+			for (uint32_t i = 0; i < len; i++) {
+				for (uint8_t j = 0; j < 8; j++) {
+					uint8_t b = ((sub[i]&(0x01<<(7-j)))>>(7-j))*0xFF;
+					for (uint8_t k = 0; k < 16; k++) {
+						pixels[t] = b;
+						pixels[t+1] = b;
+						pixels[t+2] = b;
+						pixels[t+3] = 0xFF;
+						t += 4;
+					}
+				}
+				glTexImage2D(GL_TEXTURE_2D, 0, 4, sprite.data->width, sprite.data->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
+			}
+			break;
+		}
+	default:
+		C("ERROR") << "Unknown sprite format" << endl;
+		throw(273);
+	}
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+	sprite.data->loaded = true;
 }
 #pragma endregion
 
@@ -544,6 +672,13 @@ NLS::Node::operator int() {
 		return 0;
 	}
 	return data->intValue;
+}
+
+NLS::Node::operator NLS::Sprite() {
+	if (!data) {
+		return Sprite();
+	}
+	return data->sprite;
 }
 
 NLS::Node& NLS::Node::operator= (const string& v) {

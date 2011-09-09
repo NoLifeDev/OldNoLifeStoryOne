@@ -7,12 +7,16 @@ namespace NLS {
 	class SpriteData {
 	public:
 		GLuint texture;
+		GLuint width, height;
+		GLfloat twidth, theight;
+		GLint originx, originy;
+		bool loaded;
+		void* png;
 	};
 	class Sprite {
 	public:
-		void Draw(int x, int y);
-		void Draw(int x, int y, double rotation);
-	private:
+		void Draw(int x, int y, bool flipped = false, float alpha = 1, float rotation = 0);
+		void GetTexture();
 		SpriteData* data;
 	};
 };

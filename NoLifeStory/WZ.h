@@ -19,6 +19,7 @@ namespace NLS {
 		operator string();
 		operator double();
 		operator int();
+		operator Sprite();
 		Node& operator= (const string&);
 		Node& operator= (const double&);
 		Node& operator= (const int&);
@@ -27,17 +28,7 @@ namespace NLS {
 	namespace WZ {
 		extern Node Top;
 		extern Node Empty;
-		class Directory;
-		class File;
-		class Image;
-		class SubProperty;
-		class PNGProperty;
-		class SoundProperty;
 		//And now lets define them somehow
-		class Directory {
-		public:
-			Directory(File* file, Node& n);
-		};
 		class File {
 		public:
 			File(const string& name);
@@ -49,9 +40,13 @@ namespace NLS {
 			uint32_t fileStart;
 			string copyright;
 		};
+		class Directory {
+		public:
+			Directory(File* file, Node n);
+		};
 		class Image {
 		public:
-			Image(File* file, Node& n, uint32_t offset);
+			Image(File* file, Node n, uint32_t offset);
 			void Parse();
 			Node n;
 			string name;
@@ -60,11 +55,25 @@ namespace NLS {
 		};
 		class SubProperty {
 		public:
-			SubProperty(File* file, Node& n, uint32_t offset);
+			SubProperty(File* file, Node n, uint32_t offset);
 		};
 		class ExtendedProperty {
 		public:
-			ExtendedProperty(File* file, Node& n, uint32_t offset, uint32_t eob);
+			ExtendedProperty(File* file, Node n, uint32_t offset, uint32_t eob);
+		};
+		class PNGProperty {
+		public:
+			PNGProperty(File* file, Sprite spr);
+			void Parse();
+			File* file;
+			Sprite sprite;
+			int32_t format;
+			uint8_t format2;
+			int32_t length;
+			uint32_t offset;
+		};
+		class SoundProperty {
+		public:
 		};
 		//Functions
 		bool Init(const string& path);
@@ -75,6 +84,7 @@ namespace NLS {
 		string stringValue;
 		double floatValue;
 		int intValue;
+		Sprite sprite;
 		Node parent;
 		string name;
 		map <string, Node> children;
