@@ -99,17 +99,17 @@ public :
     ///
     /// \param remoteAddress Address of the remote peer
     /// \param remotePort    Port of the remote peer
-    /// \param timeout       Optional maximum time to wait, in seconds
+    /// \param timeout       Optional maximum time to wait, in milliseconds
     ///
     /// \return Status code
     ///
     /// \see Disconnect
     ///
     ////////////////////////////////////////////////////////////
-    Status Connect(const IpAddress& remoteAddress, unsigned short remotePort, float timeout = 0.f);
+    Status Connect(const IpAddress& remoteAddress, unsigned short remotePort, Uint32 timeout = 0);
 
     ////////////////////////////////////////////////////////////
-    /// \brief Disconnect the connect from its remote peer
+    /// \brief Disconnect the socket from its remote peer
     ///
     /// This function gracefully closes the connection. If the
     /// socket is not connected, this function has no effect.
@@ -182,7 +182,27 @@ public :
     ////////////////////////////////////////////////////////////
     Status Receive(Packet& packet);
 
+private:
+
     friend class TcpListener;
+
+    ////////////////////////////////////////////////////////////
+    /// \brief Structure holding the data of a pending packet
+    ///
+    ////////////////////////////////////////////////////////////
+    struct PendingPacket
+    {
+        PendingPacket();
+
+        Uint32            Size;         ///< Data of packet size
+        std::size_t       SizeReceived; ///< Number of size bytes received so far
+        std::vector<char> Data;         ///< Data of the packet
+    };
+
+    ////////////////////////////////////////////////////////////
+    // Member data
+    ////////////////////////////////////////////////////////////
+    PendingPacket myPendingPacket; ///< Temporary data of the packet currently being received
 };
 
 } // namespace sf

@@ -28,8 +28,8 @@
 ////////////////////////////////////////////////////////////
 // Headers
 ////////////////////////////////////////////////////////////
-#include <SFML/Graphics/Image.hpp>
 #include <SFML/Graphics/RenderTarget.hpp>
+#include <SFML/Graphics/Image.hpp>
 #include <SFML/Window/Window.hpp>
 #include <string>
 
@@ -125,6 +125,22 @@ public :
     ////////////////////////////////////////////////////////////
     virtual unsigned int GetHeight() const;
 
+    ////////////////////////////////////////////////////////////
+    /// \brief Copy the current contents of the window to an image
+    ///
+    /// This is a slow operation, whose main purpose is to make
+    /// screenshots of the application. If you want to update an
+    /// image with the contents of the window and then use it for
+    /// drawing, you should rather use a sf::Texture and its
+    /// Update(Window&) function.
+    /// You can also draw things directly to a texture with the
+    /// sf::RenderTexture class.
+    ///
+    /// \return Image containing the captured contents
+    ///
+    ////////////////////////////////////////////////////////////
+    Image Capture() const;
+
 private :
 
     ////////////////////////////////////////////////////////////
@@ -194,7 +210,7 @@ private :
 /// {
 ///    // Event processing
 ///    sf::Event event;
-///    while (window.GetEvent(event))
+///    while (window.PollEvent(event))
 ///    {
 ///        // Request for closing the window
 ///        if (event.Type == sf::Event::Closed)
@@ -260,6 +276,6 @@ private :
 /// }
 /// \endcode
 ///
-/// \see sf::Window, sf::RenderTarget, sf::RenderImage, sf::View
+/// \see sf::Window, sf::RenderTarget, sf::RenderTexture, sf::View
 ///
 ////////////////////////////////////////////////////////////

@@ -117,7 +117,7 @@ public :
         void SetUri(const std::string& uri);
 
         ////////////////////////////////////////////////////////////
-        /// \brief Set the HTTP version fo the request
+        /// \brief Set the HTTP version for the request
         ///
         /// The HTTP version is 1.0 by default.
         ///
@@ -381,12 +381,12 @@ public :
     /// (which is usually pretty long).
     ///
     /// \param request Request to send
-    /// \param timeout Maximum time to wait, in seconds
+    /// \param timeout Maximum time to wait, in milliseconds
     ///
     /// \return Server's response
     ///
     ////////////////////////////////////////////////////////////
-    Response SendRequest(const Request& request, float timeout = 0.f);
+    Response SendRequest(const Request& request, Uint32 timeout = 0);
 
 private :
 

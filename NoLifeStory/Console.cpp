@@ -33,27 +33,27 @@ void NLS::Console::Loop() {
 			toggle = false;
 		}
 		sf::Event e;
-		while (window->GetEvent(e)) {
+		while (window->PollEvent(e)) {
 			switch (e.Type) {
 			case sf::Event::KeyPressed:
 				switch (e.Key.Code) {
-				case sf::Key::Back:
+				case sf::Keyboard::Back:
 					if (pos != 0) {
 						str.erase(--pos, 1);
 					}
 					break;
-				case sf::Key::Delete:
+				case sf::Keyboard::Delete:
 					if (pos != str.size()) {
 						str.erase(pos, 1);
 					}
 					break;
-				case sf::Key::Left:
+				case sf::Keyboard::Left:
 					pos = max<int32_t>(0, pos-1);
 					break;
-				case sf::Key::Right:
+				case sf::Keyboard::Right:
 					pos = min<int32_t>(str.size(), pos+1);
 					break;
-				case sf::Key::Return:
+				case sf::Keyboard::Return:
 					HandleCommand(str);
 					m.Lock();
 					strs.push_back(str);
@@ -61,7 +61,7 @@ void NLS::Console::Loop() {
 					str.clear();
 					pos = 0;
 					break;
-				case sf::Key::Tilde:
+				case sf::Keyboard::Tilde:
 					Toggle();
 					break;
 				}

@@ -16,3 +16,4 @@
 #include "Map.h"
 #include "View.h"
 #include "Console.h"
+#include "Config.h"

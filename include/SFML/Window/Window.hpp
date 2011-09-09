@@ -29,12 +29,12 @@
 // Headers
 ////////////////////////////////////////////////////////////
 #include <SFML/Window/ContextSettings.hpp>
-#include <SFML/Window/Input.hpp>
 #include <SFML/Window/VideoMode.hpp>
 #include <SFML/Window/WindowHandle.hpp>
 #include <SFML/Window/WindowStyle.hpp>
 #include <SFML/Window/GlResource.hpp>
 #include <SFML/System/Clock.hpp>
+#include <SFML/System/Vector2.hpp>
 #include <SFML/System/NonCopyable.hpp>
 #include <string>
 
@@ -144,7 +144,7 @@ public :
     ///
     /// After calling this function, the sf::Window instance remains
     /// valid and you can call Create() to recreate the window.
-    /// All other functions such as GetEvent() or Display() will
+    /// All other functions such as PollEvent() or Display() will
     /// still work (i.e. you don't have to test IsOpened() every time),
     /// and will have no effect on closed windows.
     ///
@@ -176,7 +176,7 @@ public :
     unsigned int GetWidth() const;
 
     ////////////////////////////////////////////////////////////
-    /// Get the height of the rendering region of the window
+    /// \brief Get the height of the rendering region of the window
     ///
     /// The height doesn't include the titlebar and borders
     /// of the window.
@@ -206,12 +206,12 @@ public :
     ///
     /// This function is not blocking: if there's no pending event then
     /// it will return false and leave \a event unmodified.
-    /// Note that more than event may be present in the events stack,
+    /// Note that more than one event may be present in the events stack,
     /// thus you should always call this function in a loop
     /// to make sure that you process every pending event.
     /// \code
     /// sf::Event event;
-    /// while (window.GetEvent(event))
+    /// while (window.PollEvent(event))
     /// {
     ///    // process event...
     /// }
@@ -224,7 +224,7 @@ public :
     /// \see WaitEvent
     ///
     ////////////////////////////////////////////////////////////
-    bool GetEvent(Event& event);
+    bool PollEvent(Event& event);
 
     ////////////////////////////////////////////////////////////
     /// \brief Wait for an event and return it
@@ -248,7 +248,7 @@ public :
     ///
     /// \return False if any error occured
     ///
-    /// \see GetEvent
+    /// \see PollEvent
     ///
     ////////////////////////////////////////////////////////////
     bool WaitEvent(Event& event);
@@ -277,15 +277,6 @@ public :
     ///
     ////////////////////////////////////////////////////////////
     void ShowMouseCursor(bool show);
-
-    ////////////////////////////////////////////////////////////
-    /// \brief Change the position of the mouse cursor
-    ///
-    /// \param x Left coordinate of the cursor, relative to the window
-    /// \param y Top coordinate of the cursor, relative to the window
-    ///
-    ////////////////////////////////////////////////////////////
-    void SetCursorPosition(unsigned int x, unsigned int y);
 
     ////////////////////////////////////////////////////////////
     /// \brief Change the position of the window on screen
@@ -385,17 +376,6 @@ public :
     void Display();
 
     ////////////////////////////////////////////////////////////
-    /// \brief Get the input manager attached the window
-    ///
-    /// This input gives access to the real-time state of
-    /// keyboard, mouse and joysticks for this window.
-    ///
-    /// \return Read-only reference to the input manager
-    ///
-    ////////////////////////////////////////////////////////////
-    const Input& GetInput() const;
-
-    ////////////////////////////////////////////////////////////
     /// \brief Limit the framerate to a maximum fixed frequency
     ///
     /// If a limit is set, the window will use a small delay after
@@ -415,10 +395,10 @@ public :
     /// This can be useful for calculating the framerate, or for
     /// updating the application's objects.
     ///
-    /// \return Time elapsed in last frame, in seconds
+    /// \return Time elapsed in last frame, in milliseconds
     ///
     ////////////////////////////////////////////////////////////
-    float GetFrameTime() const;
+    Uint32 GetFrameTime() const;
 
     ////////////////////////////////////////////////////////////
     /// \brief Change the joystick threshold
@@ -472,7 +452,7 @@ private :
     /// \brief Processes an event before it is sent to the user
     ///
     /// This function is called every time an event is received
-    /// from the internal window (through GetEvent or WaitEvent).
+    /// from the internal window (through PollEvent or WaitEvent).
     /// It filters out unwanted events, and performs whatever internal
     /// stuff the window needs before the event is returned to the
     /// user.
@@ -493,12 +473,9 @@ private :
     ////////////////////////////////////////////////////////////
     priv::WindowImpl* myWindow;         ///< Platform-specific implementation of the window
     priv::GlContext*  myContext;        ///< Platform-specific implementation of the OpenGL context
-    Input             myInput;          ///< Input manager connected to window
     Clock             myClock;          ///< Clock for measuring the elapsed time between frames
-    float             myLastFrameTime;  ///< Time elapsed since last frame
+    Uint32            myLastFrameTime;  ///< Time elapsed since last frame
     unsigned int      myFramerateLimit; ///< Current framerate limit
-    int               mySetCursorPosX;  ///< X coordinate passed to the last call to SetCursorPosition
-    int               mySetCursorPosY;  ///< Y coordinate passed to the last call to SetCursorPosition
 };
 
 } // namespace sf
@@ -524,9 +501,8 @@ private :
 ///
 /// The sf::Window class provides a simple interface for manipulating
 /// the window: move, resize, show/hide, control mouse cursor, etc.
-/// It also provides event handling through its GetEvent() function,
-/// and real-time state handling with its attached sf::Input object
-/// (see GetInput()).
+/// It also provides event handling through its PollEvent() and WaitEvent()
+/// functions.
 ///
 /// Note that OpenGL experts can pass their own parameters (antialiasing
 /// level, bits for the depth and stencil buffers, etc.) to the
@@ -547,7 +523,7 @@ private :
 /// {
 ///    // Event processing
 ///    sf::Event event;
-///    while (window.GetEvent(event))
+///    while (window.PollEvent(event))
 ///    {
 ///        // Request for closing the window
 ///        if (event.Type == sf::Event::Closed)

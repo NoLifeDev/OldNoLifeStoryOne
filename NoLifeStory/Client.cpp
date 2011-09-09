@@ -26,11 +26,11 @@ bool NLS::Loop() {
 		sf::Sleep(0.02-Time.delta);
 	}
 	sf::Event e;
-	while (window->GetEvent(e)) {
+	while (window->PollEvent(e)) {
 		switch (e.Type) {
 		case sf::Event::KeyPressed:
 			switch (e.Key.Code) {
-			case sf::Key::Tilde:
+			case sf::Keyboard::Tilde:
 				console->Toggle();
 				break;
 			}
