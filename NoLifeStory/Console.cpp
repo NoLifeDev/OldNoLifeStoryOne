@@ -9,7 +9,7 @@ NLS::Console* NLS::console;
 NLS::Console::Console() {
 	shutdown = false;
 	toggle = false;
-	show = true;
+	show = false;
 	t = new sf::Thread([&](){this->Loop();});
 	t->Launch();
 }
@@ -97,7 +97,11 @@ void NLS::Console::Loop() {
 		sf::Shape s = sf::Shape::Line(0, window->GetHeight()-12, window->GetWidth(), window->GetHeight()-12, 1, sf::Color::White);
 		window->Draw(s);
 		window->Display();
-		sf::Sleep(max(0.02-window->GetFrameTime(), 0.));
+		if (show) {
+			sf::Sleep(max(50-(int)window->GetFrameTime(), 0));
+		} else {
+			sf::Sleep(max(1000-(int)window->GetFrameTime(), 0));
+		}
 	}
 	delete font;
 	delete window;

@@ -12,6 +12,7 @@ namespace NLS {
 		Node& operator= (const Node&);
 		Node& operator[] (const string&);
 		Node& operator[] (const char[]);
+		Node& operator[] (const int&);
 		Node& g(const string&);
 		map<string, Node>::iterator Begin();
 		map<string, Node>::iterator End();

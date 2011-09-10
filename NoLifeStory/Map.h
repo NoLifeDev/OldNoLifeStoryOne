@@ -14,9 +14,9 @@ namespace NLS {
 		class Layer {
 		public:
 			void Draw();
-			vector<Obj> Objs;
-			vector<Tile> Tiles;
+			vector<Obj*> Objs;
+			vector<Tile*> Tiles;
 		};
-		extern Layer Layers[5];
+		extern Layer Layers[8];
 	};
 };

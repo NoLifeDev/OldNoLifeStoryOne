@@ -8,36 +8,38 @@ void NLS::Sprite::Draw(int x, int y, bool flipped, float alpha, float rotation) 
 	if (!data) {
 		return;
 	}
-	glLoadIdentity();
+	glPushMatrix();
 	if (flipped) {
 		glTranslatef(data->originx, -data->originy, 0);
 	} else {
 		glTranslatef(-data->originx, -data->originy, 0);
 	}
 	glRotatef(rotation, 0, 0, 1);
+	glTranslatef(x, y, 0);
 	glColor4f(1, 1, 1, alpha);
 	GetTexture();
 	glBegin(GL_QUADS);
 	if (flipped) {
-		glTexCoord2f(data->twidth, 0);
+		glTexCoord2f(1, 0);
 		glVertex2i(0, 0);
 		glTexCoord2f(0, 0);
 		glVertex2i(data->width, 0);
-		glTexCoord2f(0, data->theight);
+		glTexCoord2f(0, 1);
 		glVertex2i(data->width, data->height);
-		glTexCoord2f(data->twidth, data->theight);
+		glTexCoord2f(1, 1);
 		glVertex2i(0, data->height);
 	} else {
 		glTexCoord2f(0, 0);
 		glVertex2i(0, 0);
-		glTexCoord2f(data->twidth, 0);
+		glTexCoord2f(1, 0);
 		glVertex2i(data->width, 0);
-		glTexCoord2f(data->twidth, data->theight);
+		glTexCoord2f(1, 1);
 		glVertex2i(data->width, data->height);
-		glTexCoord2f(0, data->theight);
+		glTexCoord2f(0, 1);
 		glVertex2i(0, data->height);
 	}
     glEnd();
+	glPopMatrix();
 }
 
 void NLS::Sprite::GetTexture() {

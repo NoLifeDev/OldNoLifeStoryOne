@@ -7,7 +7,7 @@
 sf::Window* NLS::window;
 
 void NLS::Graphics::Init() {
-	window = new sf::Window(sf::VideoMode(800, 600), "NoLifeStory::Loading", sf::Style::Close, sf::ContextSettings(0, 0, 0, 2, 0));
+	window = new sf::Window(sf::VideoMode(800, 600), "NoLifeStory::Loading", sf::Style::Titlebar, sf::ContextSettings(0, 0, 0, 2, 0));
 #ifdef NLS_WINDOWS
 	HANDLE hIcon = LoadIconW(GetModuleHandleW(NULL), MAKEINTRESOURCEW(IDI_NOLIFESTORY_ICON));
 	HWND hWnd = window->GetSystemHandle();
@@ -25,7 +25,6 @@ void NLS::Graphics::Init() {
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	glOrtho(0, 800, 600, 0, -1, 1);
-	glPushMatrix();
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 	glClear(GL_COLOR_BUFFER_BIT);
@@ -34,9 +33,14 @@ void NLS::Graphics::Init() {
 
 void NLS::Graphics::Draw() {
 	glClear(GL_COLOR_BUFFER_BIT);
+	View.Step();
 	Map::Draw();
 	Foothold::Draw();
-	Sprite s = WZ::Top["Map"]["Tile"]["grassySoil"]["bsc"]["0"];
-	s.Draw(0, 0);
 	window->Display();
+	switch (glGetError()) {
+	case GL_NO_ERROR:
+		break;
+	default:
+		C("ERROR") << "OH GOD OPENGL FAILED" << endl;
+	}
 }

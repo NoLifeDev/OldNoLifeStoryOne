@@ -7,7 +7,7 @@
 NLS::Node NLS::Map::node;
 string NLS::Map::nextmap;
 string NLS::Map::nextportal;
-NLS::Map::Layer NLS::Map::Layers[5];
+NLS::Map::Layer NLS::Map::Layers[8];
 
 void NLS::Map::Load(const string& id, const string& portal) {
 	nextmap = id;
@@ -28,6 +28,7 @@ void NLS::Map::Load() {
 	string bgm = node["info"]["bgm"];
 	C("INFO") << "Background music: " << bgm << endl;
 	Foothold::Load(node);
+	Tile::Load(node);
 }
 
 void NLS::Map::Draw() {
@@ -38,6 +39,6 @@ void NLS::Map::Draw() {
 
 void NLS::Map::Layer::Draw() {
 	for (auto it = Tiles.begin(); it != Tiles.end(); it++) {
-
+		(*it)->Draw();
 	}
 }

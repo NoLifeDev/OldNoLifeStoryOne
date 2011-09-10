@@ -629,6 +629,10 @@ NLS::Node& NLS::Node::operator[] (const char key[]) {
 	}
 }
 
+NLS::Node& NLS::Node::operator[] (const int& key) {
+	return (*this)[tostring(key)];
+}
+
 NLS::Node& NLS::Node::g(const string& key) {
 	assert(data);
 	Node& n = data->children[key];

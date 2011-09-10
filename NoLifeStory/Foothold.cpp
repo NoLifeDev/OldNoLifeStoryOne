@@ -8,8 +8,7 @@ set <NLS::Foothold*> NLS::footholds;
 
 void NLS::Foothold::Load(Node n) {
 	for (auto i = footholds.begin(); i != footholds.end(); i++) {
-		auto f = *i;
-		delete f;
+		delete *i;
 	}
 	footholds.clear();
 	n = n["foothold"];
@@ -22,7 +21,7 @@ void NLS::Foothold::Load(Node n) {
 		for (auto j = i->second.Begin(); j != i->second.End(); j++) {
 			int fhgroup = toint(j->first);
 			for (auto k = j->second.Begin(); k != j->second.End(); k++) {
-				Node& fn = k->second;
+				Node fn = k->second;
 				Foothold* fh = new Foothold();
 				fh->x1 = fn["x1"];
 				fh->y1 = fn["y1"];
@@ -59,6 +58,7 @@ void NLS::Foothold::Load(Node n) {
 }
 
 void NLS::Foothold::Draw() {
+	glPushMatrix();
 	glColor4f(1, 1, 1, 1);
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glBegin(GL_LINES);
@@ -67,4 +67,5 @@ void NLS::Foothold::Draw() {
 		glVertex2f((*i)->x2, (*i)->y2);
 	}
 	glEnd();
+	glPopMatrix();
 }

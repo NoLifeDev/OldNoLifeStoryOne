@@ -10,7 +10,7 @@ void NLS::Init(const vector<string>& args) {
 	Time.Reset();
 	WZ::Init("C:/Nexon/MapleStory/");
 	Time.Step();
-	C("WZ") << "Directories initialized in " << floor(Time.tdelta*1000) << " ms" << endl;
+	C("WZ") << "Directories initialized in " << floor(Time.tdelta) << " ms" << endl;
 	Time.Reset();
 	Graphics::Init();
 	Map::Load("10000", "");
@@ -20,11 +20,9 @@ void NLS::Init(const vector<string>& args) {
 bool NLS::Loop() {
 	Time.Step();
 	static double fps(0);
-	fps = fps*0.99 + (1/max(Time.delta, 0.001))*0.01;
+	fps = fps*0.99 + (1/max(Time.delta, 1))*1000*0.01;
 	window->SetTitle("NoLifeStory::FrameRate = "+tostring((int)fps));
-	if (Time.delta < 0.02) {
-		sf::Sleep(0.02-Time.delta);
-	}
+	sf::Sleep(max(20-1000/fps, 0));
 	sf::Event e;
 	while (window->PollEvent(e)) {
 		switch (e.Type) {
@@ -33,6 +31,8 @@ bool NLS::Loop() {
 			case sf::Keyboard::Tilde:
 				console->Toggle();
 				break;
+			case sf::Keyboard::Escape:
+				return false;
 			}
 			break;
 		case sf::Event::Closed:
