@@ -8,7 +8,7 @@ void NLS::Sprite::Draw(int x, int y, bool flipped, float alpha, float rotation) 
 	if (!data) {
 		return;
 	}
-	glPushMatrix();
+	glLoadIdentity();
 	if (flipped) {
 		glTranslatef(data->originx, -data->originy, 0);
 	} else {
@@ -38,7 +38,6 @@ void NLS::Sprite::Draw(int x, int y, bool flipped, float alpha, float rotation) 
 		glVertex2i(0, data->height);
 	}
     glEnd();
-	glPopMatrix();
 }
 
 void NLS::Sprite::GetTexture() {

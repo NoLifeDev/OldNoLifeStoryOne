@@ -7,6 +7,7 @@
 NLS::Node NLS::Map::node;
 string NLS::Map::nextmap;
 string NLS::Map::nextportal;
+NLS::Map::Layer NLS::Map::Layers[5];
 
 void NLS::Map::Load(const string& id, const string& portal) {
 	nextmap = id;
@@ -26,6 +27,17 @@ void NLS::Map::Load() {
 	}
 	string bgm = node["info"]["bgm"];
 	C("INFO") << "Background music: " << bgm << endl;
-	Foothold::Unload();
 	Foothold::Load(node);
+}
+
+void NLS::Map::Draw() {
+	for (uint8_t i = 0; i < 8; i++) {
+		Layers[i].Draw();
+	}
+}
+
+void NLS::Map::Layer::Draw() {
+	for (auto it = Tiles.begin(); it != Tiles.end(); it++) {
+
+	}
 }

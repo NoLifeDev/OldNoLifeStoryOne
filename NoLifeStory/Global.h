@@ -13,6 +13,8 @@
 #include "Client.h"
 #include "Time.h"
 #include "Network.h"
+#include "Obj.h"
+#include "Tile.h"
 #include "Map.h"
 #include "View.h"
 #include "Console.h"

@@ -17,44 +17,35 @@ uint32_t OffsetKey = 0x581C3F6D;
 int16_t EncVersion;
 uint16_t Version;
 uint32_t VersionHash;
+uint8_t Buf1[0x1000000];
+uint8_t Buf2[0x1000000];
 
 #pragma region ZLib Stuff
-uint8_t* Decompress(uint8_t* inBuffer, uint32_t inLen, uint32_t outLen){
-	const uint32_t inChunk = 4096;
-	uint32_t inBufferIndex = 0;
-	const uint32_t outChunk = 4096;
-	uint32_t outBufferIndex = 0;
-	uint8_t* outBuffer = new uint8_t[outLen];
+void Decompress(uint32_t inLen, uint32_t outLen){
 	int err = Z_OK;
 	z_stream strm;
-	strm.next_in = nullptr;
-	strm.avail_in = 0;
+	strm.next_in = Buf2;
+	strm.avail_in = inLen;
 	strm.opaque = nullptr;
 	strm.zfree = nullptr;
 	strm.zalloc = nullptr;
 	inflateInit(&strm);
-	do {
-		strm.next_in = inBuffer+inBufferIndex;
-		strm.avail_in = (inLen-inBufferIndex > inChunk ? inChunk : inLen-inBufferIndex);
-		inBufferIndex += strm.avail_in;
-		if (!strm.avail_in) {
-			break;
-		}
-		strm.next_out = outBuffer;
-		strm.avail_out = outLen;
-		err = inflate(&strm, Z_NO_FLUSH);
-		switch(err){
-		case Z_NEED_DICT:
-		case Z_DATA_ERROR:
-		case Z_MEM_ERROR:
-		case Z_BUF_ERROR:
-			NLS::C("ERROR") << "I hate zlib!" << endl;
-			throw(273);
-			break;
-		}
-	} while (err != Z_STREAM_END);
+	strm.next_out = Buf1;
+	strm.avail_out = outLen;
+	err = inflate(&strm, Z_NO_FLUSH);
+	switch(err){
+	case Z_OK:
+	case Z_STREAM_END:
+		break;
+	default:
+		NLS::C("ERROR") << "I hate zlib!" << endl;
+		throw(273);
+	}
+	if (strm.total_out != outLen) {
+		NLS::C("ERROR") << "I hate zlib!" << endl;
+		throw(273);
+	}
 	inflateEnd(&strm);
-	return outBuffer;
 }
 #pragma endregion
 
@@ -211,11 +202,12 @@ bool NLS::WZ::Init(const string& path) {
 	} else {
 		C("WZ") << "Loading standard WZ file structure" << endl;
 		new File("Base", false);
-		for (auto it = Top.Begin(); it != Top.End(); it++) {
-			new File(it->first);
+		for (auto it = Top["Base"].Begin(); it != Top["Base"].End(); it++) {
+			if (!it->second.data->image) {
+				new File(it->first);
+			}
 		}
 	}
-	C("WZ") << "Great spot to break" << endl;
 	return true;
 }
 
@@ -399,7 +391,9 @@ void NLS::WZ::Image::Parse() {
 			//TODO: Actually resolve the UOL
 		}
 		for (auto it = n.Begin(); it != n.End(); it++) {
-			Resolve(it->second);
+			if (it->second.data) {
+				Resolve(it->second);
+			}
 		}
 	};
 	Resolve(n);
@@ -474,6 +468,8 @@ NLS::WZ::ExtendedProperty::ExtendedProperty(File* file, Node n, uint32_t offset,
 		}
 		n.data->sprite.data = new SpriteData;
 		n.data->sprite.data->png = new PNGProperty(file, n.data->sprite);
+		n.data->sprite.data->originx = n["origin"]["x"];
+		n.data->sprite.data->originy = n["origin"]["y"];
 	} else if (name == "Shape2D#Vector2D") {
 		n.g("x") = ReadCInt(file->file);
 		n.g("y") = ReadCInt(file->file);
@@ -511,8 +507,14 @@ NLS::WZ::ExtendedProperty::ExtendedProperty(File* file, Node n, uint32_t offset,
 NLS::WZ::PNGProperty::PNGProperty(File* file, Sprite spr) {
 	this->file = file;
 	sprite = spr;
+	sprite.data->loaded = false;
 	sprite.data->width = ReadCInt(file->file);
 	sprite.data->height = ReadCInt(file->file);
+	uint32_t w, h;
+	for (w = 1; w < sprite.data->width; w <<= 1) {}
+	for (h = 1; h < sprite.data->height; h <<= 1) {}
+	sprite.data->twidth = (float)sprite.data->width/w;
+	sprite.data->theight = (float)sprite.data->height/h;
 	format = ReadCInt(file->file);
 	format2 = Read<uint8_t>(file);
 	file->file.seekg(4, ios_base::cur);
@@ -526,9 +528,8 @@ NLS::WZ::PNGProperty::PNGProperty(File* file, Sprite spr) {
 }
 
 void NLS::WZ::PNGProperty::Parse() {
-	uint8_t *data = new uint8_t[length];
 	file->file.seekg(offset);
-	file->file.read((char*)data, length);
+	file->file.read((char*)Buf2, length);
 	int32_t f = format+format2;
 	glGenTextures(1, &sprite.data->texture);
 	glBindTexture(GL_TEXTURE_2D, sprite.data->texture);
@@ -536,47 +537,45 @@ void NLS::WZ::PNGProperty::Parse() {
 	case 1:
 		{
 			uint32_t len = 2*sprite.data->width*sprite.data->height;
-			uint8_t *sub = Decompress(data, length, len);
-			uint8_t *pixels = new uint8_t[len*2];
+			Decompress(length, len);
 			for (uint32_t i = 0; i < len; i++) {
-				pixels[i*2] = sub[i]&0x0F|(sub[i]&0x0F<<4);
-				pixels[i*2+1] = sub[i]&0xF0|(sub[i]&0xF0>>4);
+				Buf2[i*2] = (Buf1[i]&0x0F)|((Buf1[i]&0x0F)<<4);
+				Buf2[i*2+1] = (Buf1[i]&0xF0)|((Buf1[i]&0xF0)>>4);
 			}
-			glTexImage2D(GL_TEXTURE_2D, 0, 4, sprite.data->width, sprite.data->height, 0, GL_BGRA, GL_UNSIGNED_BYTE, pixels);
+			glTexImage2D(GL_TEXTURE_2D, 0, 4, sprite.data->width, sprite.data->height, 0, GL_BGRA, GL_UNSIGNED_BYTE, Buf2);
 			break;
 		}
 	case 2:
 		{
 			uint32_t len = 4*sprite.data->width*sprite.data->height;
-			uint8_t *pixels = Decompress(data, length, len);
-			glTexImage2D(GL_TEXTURE_2D, 0, 4, sprite.data->width, sprite.data->height, 0, GL_BGRA, GL_UNSIGNED_BYTE, pixels);
+			Decompress(length, len);
+			glTexImage2D(GL_TEXTURE_2D, 0, 4, sprite.data->width, sprite.data->height, 0, GL_BGRA, GL_UNSIGNED_BYTE, Buf1);
 			break;
 		}
 	case 513:
 		{
 			uint32_t len = 2*sprite.data->width*sprite.data->height;
-			uint8_t *pixels = Decompress(data, length, len);
-			glTexImage2D(GL_TEXTURE_2D, 0, 3, sprite.data->width, sprite.data->height, 0, GL_BGR, GL_UNSIGNED_SHORT_5_6_5, pixels);
+			Decompress(length, len);
+			glTexImage2D(GL_TEXTURE_2D, 0, 4, sprite.data->width, sprite.data->height, 0, GL_BGR, GL_UNSIGNED_SHORT_5_6_5, Buf1);
 			break;
 		}
 	case 517:
 		{
 			uint32_t len = sprite.data->width*sprite.data->height/128;
-			uint8_t *sub = Decompress(data, length, len);
-			uint8_t *pixels = new uint8_t[len*512];
+			Decompress(length, len);
 			uint32_t t = 0;
 			for (uint32_t i = 0; i < len; i++) {
 				for (uint8_t j = 0; j < 8; j++) {
-					uint8_t b = ((sub[i]&(0x01<<(7-j)))>>(7-j))*0xFF;
+					uint8_t b = ((Buf1[i]&(0x01<<(7-j)))>>(7-j))*0xFF;
 					for (uint8_t k = 0; k < 16; k++) {
-						pixels[t] = b;
-						pixels[t+1] = b;
-						pixels[t+2] = b;
-						pixels[t+3] = 0xFF;
+						Buf2[t] = b;
+						Buf2[t+1] = b;
+						Buf2[t+2] = b;
+						Buf2[t+3] = 0xFF;
 						t += 4;
 					}
 				}
-				glTexImage2D(GL_TEXTURE_2D, 0, 4, sprite.data->width, sprite.data->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
+				glTexImage2D(GL_TEXTURE_2D, 0, 4, sprite.data->width, sprite.data->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, Buf2);
 			}
 			break;
 		}

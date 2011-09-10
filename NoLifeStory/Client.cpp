@@ -8,7 +8,7 @@ void NLS::Init(const vector<string>& args) {
 	C("INFO") << "Initializing NoLifeStory" << endl;
 	Network::Init();
 	Time.Reset();
-	WZ::Init(args[1]);
+	WZ::Init("C:/Nexon/MapleStory/");
 	Time.Step();
 	C("WZ") << "Directories initialized in " << floor(Time.tdelta*1000) << " ms" << endl;
 	Time.Reset();

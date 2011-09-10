@@ -7,6 +7,11 @@
 set <NLS::Foothold*> NLS::footholds;
 
 void NLS::Foothold::Load(Node n) {
+	for (auto i = footholds.begin(); i != footholds.end(); i++) {
+		auto f = *i;
+		delete f;
+	}
+	footholds.clear();
 	n = n["foothold"];
 	if (!n) {
 		C("ERROR") << "No foothold node" << endl;
@@ -62,12 +67,4 @@ void NLS::Foothold::Draw() {
 		glVertex2f((*i)->x2, (*i)->y2);
 	}
 	glEnd();
-}
-
-void NLS::Foothold::Unload() {
-	for (auto i = footholds.begin(); i != footholds.end(); i++) {
-		auto f = *i;
-		delete f;
-	}
-	footholds.clear();
 }

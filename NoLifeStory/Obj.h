@@ -4,18 +4,10 @@
 ////////////////////////////////////////////////////
 
 namespace NLS {
-	class Foothold {
+	class Obj {
 	public:
-		double x1, y1, x2, y2;
-		double dir, len;
-		Foothold *next, *prev;
-		int id, nextid, previd;
-		int layer, group;
-		double force;
-		bool forbid;
-		bool walk;
+		void Draw();
 		static void Load(Node n);
-		static void Draw();
+		double x, y;
 	};
-	extern set <Foothold*> footholds;
 };

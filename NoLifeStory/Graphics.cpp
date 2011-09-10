@@ -34,6 +34,9 @@ void NLS::Graphics::Init() {
 
 void NLS::Graphics::Draw() {
 	glClear(GL_COLOR_BUFFER_BIT);
+	Map::Draw();
 	Foothold::Draw();
+	Sprite s = WZ::Top["Map"]["Tile"]["grassySoil"]["bsc"]["0"];
+	s.Draw(0, 0);
 	window->Display();
 }
