@@ -39,6 +39,7 @@ namespace NLS {
 			uint64_t fileSize;
 			uint32_t fileStart;
 			string copyright;
+			set<sf::Thread*> threads;
 		};
 		class Directory {
 		public:

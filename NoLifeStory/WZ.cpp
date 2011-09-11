@@ -209,7 +209,6 @@ bool NLS::WZ::Init(const string& path) {
 NLS::WZ::File::File(const string& name, Node n) {
 	string filename = Path+name+".wz";
 	file.open(filename, file.in|file.binary);
-	C("WZ") << "Loading " << name << ".wz" << endl;
 	if (!file.is_open()) {
 		C("ERROR") << "Failed to load " << name << ".wz" << endl;
 		return;
@@ -287,6 +286,10 @@ NLS::WZ::File::File(const string& name, Node n) {
 		}
 	}
 	new Directory(this, n);
+	for (auto it = threads.begin(); it != threads.end(); it++) {
+		(*it)->Wait();
+		delete *it;
+	}
 }
 
 uint32_t NLS::WZ::File::Hash(uint16_t enc, uint16_t real) {
@@ -307,7 +310,10 @@ uint32_t NLS::WZ::File::Hash(uint16_t enc, uint16_t real) {
 NLS::WZ::Directory::Directory(File* file, Node n) {
 	int32_t count = ReadCInt(file->file);
 	if (count == 0) {
-		new File(n.data->name, n);
+		sf::Thread* t = new sf::Thread([](Node n){new File(n.data->name, n);}, n);
+		t->Launch();
+		file->threads.insert(t);
+		return;
 	}
 	set<pair<string, uint32_t>> dirs;
 	for (int i = 0; i < count; i++) {
