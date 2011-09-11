@@ -15,16 +15,24 @@ void NLS::Map::Load(const string& id, const string& portal) {
 }
 
 void NLS::Map::Load() {
-	C("INFO") << "Loading map " << nextmap << endl;
 	char zone;
 	if (nextmap == "login") {
 		//Uh....
 		throw(273);
 	} else {
-		nextmap.insert(0, 9-nextmap.size(), '0');
+		if (nextmap.size() < 9) {
+			nextmap.insert(0, 9-nextmap.size(), '0');
+		}
 		zone = nextmap[0];
 		node = WZ::Top["Map"]["Map"][string("Map")+zone][nextmap];
 	}
+	if (!node) {
+		C("ERROR") << "Unable to locate map " << nextmap << endl;
+		nextmap = "";
+		nextportal = "";
+		return;
+	}
+	C("INFO") << "Loading map " << nextmap << endl;
 	string bgm = node["info"]["bgm"];
 	C("INFO") << "Background music: " << bgm << endl;
 	for (uint8_t i = 0; i < 8; i++) {
