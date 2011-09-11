@@ -69,3 +69,10 @@ inline double angdif (const double& angle1, const double& angle2) {
 inline double sign (const double& x) {
 	return x>0?1:x<0?-1:0;
 }
+
+inline bool exists (const string& name) {
+	ifstream file(name);
+	bool check = file.is_open();
+	file.close();
+	return check;
+}

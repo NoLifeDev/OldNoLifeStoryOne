@@ -22,6 +22,7 @@ namespace NLS {
 		sf::Thread* t;
 		sf::Mutex m;
 		bool toggle, show;
+		ofstream file;
 	};
 	extern Console* console;
 	class Stream {

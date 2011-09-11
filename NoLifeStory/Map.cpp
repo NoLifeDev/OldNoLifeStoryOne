@@ -27,8 +27,18 @@ void NLS::Map::Load() {
 	}
 	string bgm = node["info"]["bgm"];
 	C("INFO") << "Background music: " << bgm << endl;
+	for (uint8_t i = 0; i < 8; i++) {
+		Layers[i].Tiles.clear();
+		Layers[i].Objs.clear();
+	}
 	Foothold::Load(node);
 	Tile::Load(node);
+	View.tx = 0;
+	View.ty = 0;
+	View.vx = 0;
+	View.vy = 0;
+	nextmap = "";
+	nextportal = "";
 }
 
 void NLS::Map::Draw() {

@@ -8,7 +8,7 @@ void NLS::Init(const vector<string>& args) {
 	C("INFO") << "Initializing NoLifeStory" << endl;
 	Network::Init();
 	Time.Reset();
-	WZ::Init("C:/Nexon/MapleStory/");
+	WZ::Init(args.size()>1?args[1]:"");
 	Time.Step();
 	C("WZ") << "Directories initialized in " << floor(Time.tdelta) << " ms" << endl;
 	Time.Reset();
@@ -41,6 +41,9 @@ bool NLS::Loop() {
 		}
 	}
 	Graphics::Draw();
+	if (!Map::nextmap.empty()) {
+		Map::Load();
+	}
 	return true;
 }
 

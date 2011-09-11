@@ -15,6 +15,7 @@ NLS::Console::Console() {
 }
 
 void NLS::Console::Loop() {
+	file.open("console.log");
 	window = new sf::RenderWindow(sf::VideoMode(400,400,32), "NoLifeStory::FancyConsole", sf::Style::Resize|sf::Style::Close, sf::ContextSettings(0, 0, 0, 2, 0));
 	window->Show(show);
 #ifdef NLS_WINDOWS
@@ -25,7 +26,13 @@ void NLS::Console::Loop() {
 	}
 #endif
 	font = new sf::Font();
+#ifdef NLS_WINDOWS
+	auto bleh1 = FindResource(0, MAKEINTRESOURCE(IDI_NOLIFESTORY_FONT), MAKEINTRESOURCE(RT_RCDATA));
+	auto bleh2 = LoadResource(0, bleh1);
+	font->LoadFromMemory(LockResource(bleh2), SizeofResource(0, bleh1));
+#else
 	font->LoadFromFile("font.ttf");
+#endif
 	pos = 0;
 	while (!shutdown) {
 		if (toggle) {
@@ -54,10 +61,10 @@ void NLS::Console::Loop() {
 					pos = min<int32_t>(str.size(), pos+1);
 					break;
 				case sf::Keyboard::Return:
-					HandleCommand(str);
 					m.Lock();
 					strs.push_back(str);
 					m.Unlock();
+					HandleCommand(str);
 					str.clear();
 					pos = 0;
 					break;
@@ -114,12 +121,46 @@ void NLS::Console::HandleCommand(const string& str) {
 	if (command.size() == 0) {
 		return;
 	}
-	//Do stuff :D
+	if (command[0] == "help" or command[0] == "?") {
+		if (command.size() == 1) {
+			Push("Available commands:");
+			Push("help [Command Name]");
+			Push("? [Command Name]");
+			Push("exit");
+			Push("load <Map ID> [Portal ID]");
+		} else {
+			if (command[1] == "help" or command[1] == "?") {
+				Push("help [Command Name]");
+				Push("Provides information on what commands are available and what they do");
+				Push("? is a synonym for help");
+			} else if (command[1] == "exit") {
+				Push("exit");
+				Push("Aborts NoLifeStory");
+			} else if (command[1] == "load") {
+				Push("load <Map ID> [Portal ID]");
+				Push("Loads the specified map and also optionally navigates to the specified portal.");
+			} else {
+				Push("Unknown command "+command[1]);
+			}
+		}
+	} else if (command[0] == "exit") {
+		exit(0);
+	} else if (command[0] == "load") {
+		if (command.size() == 1) {
+			Push("Please specify a map id when using the load command");
+		} else if (command.size() == 2) {
+			Map::Load(command[1], "");
+		} else {
+			Map::Load(command[1], command[2]);
+		}
+	}
 }
 
 void NLS::Console::Push(const string& str) {
 	m.Lock();
+	file << str << endl;
 	strs.push_back(str);
+	file.flush();
 	m.Unlock();
 }
 

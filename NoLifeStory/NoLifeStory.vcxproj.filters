@@ -63,6 +63,9 @@
     <ClInclude Include="Tile.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WZ.cpp">
@@ -113,6 +116,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\maplestory.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="font.ttf">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>

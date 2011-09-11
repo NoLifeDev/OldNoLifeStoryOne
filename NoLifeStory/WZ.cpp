@@ -189,21 +189,25 @@ inline string ReadStringOffset(ifstream& file, uint32_t offset) {
 #pragma endregion
 
 #pragma region Parsing Stuff
-bool NLS::WZ::Init(const string& path) {
+void NLS::WZ::Init(const string& path) {
 	memset(BMSKey, 0, 0xFFFF);
-	Path = path;
 	Top.data = new NodeData();
-	ifstream test(path+"Data.wz");
-	bool beta = test.is_open();
-	test.close();
-	if (beta) {
-		C("WZ") << "Loading beta WZ file structure" << endl;
-		new File("Data", Top);
-	} else {
-		C("WZ") << "Loading standard WZ file structure" << endl;
-		new File("Base", Top);
+	string paths[4] = {path, "", "C:/Nexon/MapleStory/", "/"};
+	for (int i = 0; i < 4; i++) {
+		Path = paths[i];
+		if (exists(Path+"Data.wz")) {
+			C("WZ") << "Loading beta WZ file structure" << endl;
+			new File("Data", Top);
+			return;
+		}
+		if(exists(Path+"Base.wz")) {
+			C("WZ") << "Loading standard WZ file structure" << endl;
+			new File("Base", Top);
+			return;
+		}
 	}
-	return true;
+	C("ERROR") << "I CAN'T FIND YOUR WZ FILES YOU NUB" << endl;
+	throw(273);
 }
 
 NLS::WZ::File::File(const string& name, Node n) {

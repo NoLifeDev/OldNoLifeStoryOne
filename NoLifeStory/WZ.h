@@ -77,7 +77,7 @@ namespace NLS {
 		public:
 		};
 		//Functions
-		bool Init(const string& path);
+		void Init(const string& path);
 	}
 	class NodeData {
 	public:
