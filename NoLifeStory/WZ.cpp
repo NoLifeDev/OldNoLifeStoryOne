@@ -15,7 +15,7 @@ uint8_t *WZKeys[] = {GMSKey, BMSKey};
 uint8_t GMSKeyIV[4] = {0x4D, 0x23, 0xC7, 0x2B};
 uint32_t OffsetKey = 0x581C3F6D;
 int16_t EncVersion;
-uint16_t Version;
+uint16_t Version = 0;
 uint32_t VersionHash;
 uint8_t Buf1[0x1000000];
 uint8_t Buf2[0x1000000];
@@ -198,26 +198,22 @@ bool NLS::WZ::Init(const string& path) {
 	test.close();
 	if (beta) {
 		C("WZ") << "Loading beta WZ file structure" << endl;
-		new File("Data", true);
+		new File("Data", Top);
 	} else {
 		C("WZ") << "Loading standard WZ file structure" << endl;
-		new File("Base", false);
-		for (auto it = Top["Base"].Begin(); it != Top["Base"].End(); it++) {
-			if (!it->second.data->image) {
-				new File(it->first);
-			}
-		}
+		new File("Base", Top);
 	}
 	return true;
 }
 
-NLS::WZ::File::File(const string& name) {
+NLS::WZ::File::File(const string& name, Node n) {
 	string filename = Path+name+".wz";
 	file.open(filename, file.in|file.binary);
-	C("WZ") << "Loading file: " << filename << endl;
+	C("WZ") << "Loading " << name << ".wz" << endl;
 	if (!file.is_open()) {
-		C("ERROR") << "Failed to load WZ file" << endl;
-		throw(273);
+		C("ERROR") << "Failed to load " << name << ".wz" << endl;
+		return;
+		//throw(273);
 	}
 	Files.insert(this);
 	ident.resize(4);
@@ -226,86 +222,71 @@ NLS::WZ::File::File(const string& name) {
 	fileStart = Read<uint32_t>(file);
 	file >> copyright;
 	file.seekg(fileStart);
-	int16_t eversion = Read<int16_t>(file);
-	if (eversion != EncVersion) {
-		C("ERROR") << "Version of WZ file does not match existing files" << endl;
-	}
-	new Directory(this, Top.g(name));
-}
-NLS::WZ::File::File(const string& name, bool beta) {//TODO: Finish this!
-	string filename = Path+name+".wz";
-	file.open(filename, file.in|file.binary);
-	C("WZ") << "Loading file: " << filename << endl;
-	if (!file.is_open()) {
-		C("ERROR") << "Failed to load WZ file" << endl;
-		throw(273);
-	}
-	Files.insert(this);
-	ident.resize(4);
-	file.read(const_cast<char*>(ident.c_str()), 4);
-	fileSize = Read<uint64_t>(file);
-	fileStart = Read<uint32_t>(file);
-	file >> copyright;
-	file.seekg(fileStart);
-	EncVersion = Read<int16_t>(file);
-	int32_t count = ReadCInt(file);
-	uint32_t c = 0;
-	for (int k = 0; k < count; k++) {
-		uint8_t type = Read<uint8_t>(file);
-		if (type == 3) {
-			ReadEncFast(file);
-			ReadCInt(file);
-			ReadCInt(file);
-			Read<uint32_t>(file);
-			continue;
-		} else if (type == 4) {
-			ReadEncFast(file);
-			ReadCInt(file);
-			ReadCInt(file);
-			c = file.tellg();
-			break;
-		} else {
-			C("ERROR") << "Malformed WZ structure" << endl;
-			throw(273);
-		}
-	}
-	if (c == 0) {
-		C("ERROR") << "Unable to find a top level .img for hash verification" << endl;
-	}
-	for (uint8_t j = 0; j < 2; j++) {
-		WZKey = WZKeys[j];
-		for (Version = 0; Version < 256; Version++) {
-			VersionHash = Hash(EncVersion, Version);
-			if (VersionHash) {
-				file.clear();
-				file.seekg(c);
-				uint32_t offset = ReadOffset(this);
-				if (offset > fileSize) {
-					continue;
-				}
-				file.seekg(offset);
-				uint8_t a = Read<uint8_t>(file);
-				if(a != 0x73) {
-					continue;
-				}
-				string s = ReadEncString(file);
-				if (s != "Property") {
-					continue;
-				}
-				C("WZ") << "Detected WZ version: " << Version << endl;
-				goto wzdone;
+	if (!Version) {
+		EncVersion = Read<int16_t>(file);
+		int32_t count = ReadCInt(file);
+		uint32_t c = 0;
+		for (int k = 0; k < count; k++) {
+			uint8_t type = Read<uint8_t>(file);
+			if (type == 3) {
+				ReadEncFast(file);
+				ReadCInt(file);
+				ReadCInt(file);
+				Read<uint32_t>(file);
+				continue;
+			} else if (type == 4) {
+				ReadEncFast(file);
+				ReadCInt(file);
+				ReadCInt(file);
+				c = file.tellg();
+				break;
+			} else {
+				C("ERROR") << "Malformed WZ structure" << endl;
+				throw(273);
 			}
 		}
-	}
-	C("ERROR") << "Unable to determine WZ version" << endl;
-	throw(273);
-	wzdone:
-	file.seekg(fileStart+2);
-	if (beta) {
-		new Directory(this, Top);
+		if (c == 0) {
+			C("ERROR") << "Unable to find a top level .img for hash verification" << endl;
+		}
+		bool success = false;
+		for (uint8_t j = 0; j < 2 and !success; j++) {
+			WZKey = WZKeys[j];
+			for (Version = 0; Version < 256; Version++) {
+				VersionHash = Hash(EncVersion, Version);
+				if (VersionHash) {
+					file.clear();
+					file.seekg(c);
+					uint32_t offset = ReadOffset(this);
+					if (offset > fileSize) {
+						continue;
+					}
+					file.seekg(offset);
+					uint8_t a = Read<uint8_t>(file);
+					if(a != 0x73) {
+						continue;
+					}
+					string s = ReadEncString(file);
+					if (s != "Property") {
+						continue;
+					}
+					C("WZ") << "Detected WZ version: " << Version << endl;
+					success = true;
+					break;
+				}
+			}
+		}
+		if (!success) {
+			C("ERROR") << "Unable to determine WZ version" << endl;
+			throw(273);
+		}
+		file.seekg(fileStart+2);
 	} else {
-		new Directory(this, Top.g(name));
+		int16_t eversion = Read<int16_t>(file);
+		if (eversion != EncVersion) {
+			C("ERROR") << "Version of WZ file does not match existing files" << endl;
+		}
 	}
+	new Directory(this, n);
 }
 
 uint32_t NLS::WZ::File::Hash(uint16_t enc, uint16_t real) {
@@ -325,6 +306,9 @@ uint32_t NLS::WZ::File::Hash(uint16_t enc, uint16_t real) {
 
 NLS::WZ::Directory::Directory(File* file, Node n) {
 	int32_t count = ReadCInt(file->file);
+	if (count == 0) {
+		new File(n.data->name, n);
+	}
 	set<pair<string, uint32_t>> dirs;
 	for (int i = 0; i < count; i++) {
 		string name;

@@ -32,8 +32,7 @@ namespace NLS {
 		//And now lets define them somehow
 		class File {
 		public:
-			File(const string& name);
-			File(const string& name, bool beta);
+			File(const string& name, Node n);
 			ifstream file;
 			uint32_t Hash(uint16_t enc, uint16_t real);
 			string ident;
