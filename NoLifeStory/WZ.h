@@ -29,22 +29,12 @@ namespace NLS {
 	namespace WZ {
 		extern Node Top;
 		extern Node Empty;
-		class File {
-		public:
-			File(Node n);
-			ifstream file;
-			string ident;
-			uint64_t fileSize;
-			uint32_t fileStart;
-			string copyright;
-			set<sf::Thread*> threads;
-		};
+		void File(Node n);
 		class Image {
 		public:
 			Image(ifstream* file, Node n, uint32_t offset);
 			void Parse();
 			Node n;
-			string name;
 			uint32_t offset;
 			ifstream* file;
 		};
@@ -62,9 +52,8 @@ namespace NLS {
 		class SoundProperty {
 		public:
 		};
-		void Directory(File* file, Node n);
-		void SubProperty(ifstream& file, Node n, uint32_t offset);
-		void ExtendedProperty(ifstream& file, Node n, uint32_t offset);
+		void SubProperty(ifstream* file, Node n, uint32_t offset);
+		void ExtendedProperty(ifstream* file, Node n, uint32_t offset);
 		//Functions
 		void Init(const string& path);
 	}
