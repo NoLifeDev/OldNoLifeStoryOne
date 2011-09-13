@@ -54,7 +54,6 @@ namespace NLS {
 		};
 		void SubProperty(ifstream* file, Node n, uint32_t offset);
 		void ExtendedProperty(ifstream* file, Node n, uint32_t offset);
-		//Functions
 		void Init(const string& path);
 	}
 	class NodeData {

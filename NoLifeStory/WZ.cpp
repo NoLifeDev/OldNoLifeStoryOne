@@ -19,7 +19,7 @@ uint32_t VersionHash;
 uint8_t Buf1[0x1000000];
 uint8_t Buf2[0x1000000];
 
-#pragma region Random junk
+#pragma region Zlib
 void Decompress(uint32_t inLen, uint32_t outLen){
 	z_stream strm;
 	strm.next_in = Buf2;
@@ -32,7 +32,7 @@ void Decompress(uint32_t inLen, uint32_t outLen){
 	strm.avail_out = outLen;
 	int err = inflate(&strm, Z_NO_FLUSH);
 	switch(err){
-	case Z_STREAM_END:
+	case Z_OK:
 		break;
 	default:
 		NLS::C("ERROR") << "I hate zlib!" << endl;
@@ -43,21 +43,6 @@ void Decompress(uint32_t inLen, uint32_t outLen){
 		throw(273);
 	}
 	inflateEnd(&strm);
-}
-
-uint32_t Hash(uint16_t enc, uint16_t real) {
-	string s = tostring(real);
-	int l = s.size();
-	uint32_t hash = 0;
-	for (int i = 0; i < l; i++) {
-		hash = 32*hash+s[i]+1;
-	}
-	uint32_t result = 0xFF^(hash>>24)^(hash<<8>>24)^(hash<<16>>24)^(hash<<24>>24);
-	if (result == enc) {
-		return hash;
-	} else {
-		return 0;
-	}
 }
 #pragma endregion
 
@@ -181,7 +166,7 @@ inline string ReadStringOffset(ifstream* file, uint32_t offset) {
 }
 #pragma endregion
 
-#pragma region Parsing Stuff
+#pragma region WZ Initialization
 void NLS::WZ::Init(const string& path) {
 	memset(BMSKey, 0, 0xFFFF);
 	Top.data = new NodeData();
@@ -204,7 +189,9 @@ void NLS::WZ::Init(const string& path) {
 	C("ERROR") << "I CAN'T FIND YOUR WZ FILES YOU NUB" << endl;
 	throw(273);
 }
+#pragma endregion
 
+#pragma region WZ Files
 void NLS::WZ::File(Node n) {
 	string filename = Path+n.data->name+".wz";
 	ifstream *file = new ifstream(filename, ios::in|ios::binary);
@@ -226,7 +213,7 @@ void NLS::WZ::File(Node n) {
 	file->seekg(fileStart);
 	auto ReadOffset = [](ifstream* file, uint32_t fileStart) -> uint32_t {
 		uint32_t p = file->tellg();
-		p = (fileStart)^0xFFFFFFFF;
+		p = (p-fileStart)^0xFFFFFFFF;
 		p *= VersionHash;
 		p -= OffsetKey;
 		p = (p<<(p&0x1F))|(p>>(32-p&0x1F));
@@ -265,8 +252,13 @@ void NLS::WZ::File(Node n) {
 		for (uint8_t j = 0; j < 2 and !success; j++) {
 			WZKey = WZKeys[j];
 			for (Version = 0; Version < 256; Version++) {
-				VersionHash = Hash(EncVersion, Version);
-				if (VersionHash) {
+				string s = tostring(Version);
+				VersionHash = 0;
+				for (int i = 0; i < s.size(); i++) {
+					VersionHash = 32*VersionHash+s[i]+1;
+				}
+				uint32_t result = 0xFF^(VersionHash>>24)^(VersionHash<<8>>24)^(VersionHash<<16>>24)^(VersionHash<<24>>24);
+				if (result == EncVersion) {
 					file->clear();
 					file->seekg(c);
 					uint32_t offset = ReadOffset(file, fileStart);
@@ -278,8 +270,8 @@ void NLS::WZ::File(Node n) {
 					if(a != 0x73) {
 						continue;
 					}
-					string s = ReadEncString(file);
-					if (s != "Property") {
+					string ss = ReadEncString(file);
+					if (ss != "Property") {
 						continue;
 					}
 					C("WZ") << "Detected WZ version: " << Version << endl;
@@ -354,7 +346,9 @@ void NLS::WZ::File(Node n) {
 		delete *it;
 	}
 }
+#pragma endregion
 
+#pragma region WZ Images
 NLS::WZ::Image::Image(ifstream* file, Node n, uint32_t offset) {
 	this->n = n;
 	n.data->image = this;
@@ -365,13 +359,22 @@ NLS::WZ::Image::Image(ifstream* file, Node n, uint32_t offset) {
 void NLS::WZ::Image::Parse() {
 	file->seekg(offset);
 	uint8_t a = Read<uint8_t>(file);
-	assert(a == 0x73);
+	if (a != 0x73) {
+		C("WZ") << "Invalid WZ image!" << endl;
+		throw(273);
+	}
 	string s = ReadEncString(file);
-	assert(s == "Property");
+	if (s != "Property") {
+		C("WZ") << "Invalid WZ image!" << endl;
+		throw(273);
+	}
 	uint16_t b = Read<uint16_t>(file);
-	assert(b == 0);
+	if (b != 0) {
+		C("WZ") << "Invalid WZ image!" << endl;
+		throw(273);
+	}
 	SubProperty(file, n, offset);
-	function <void(Node)> Resolve = [&](Node n) {
+	function <void(Node)> Resolve = [&Resolve](Node n) {
 		string s = n;
 		if (s.substr(0, 5) == "|UOL|") {
 			s.erase(0, 5);
@@ -489,7 +492,9 @@ void NLS::WZ::ExtendedProperty(ifstream* file, Node n, uint32_t offset) {
 		throw(273);
 	};
 }
+#pragma endregion
 
+#pragma region PNG Properties
 NLS::WZ::PNGProperty::PNGProperty(ifstream* file, Sprite spr) {
 	this->file = file;
 	sprite = spr;
