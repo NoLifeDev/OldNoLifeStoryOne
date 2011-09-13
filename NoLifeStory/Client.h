@@ -4,7 +4,7 @@
 ////////////////////////////////////////////////////
 
 namespace NLS {
-	void Init(vector<string> args);
+	void Init(const vector<string>& args);
 	bool Loop();
 	void Unload();
 };

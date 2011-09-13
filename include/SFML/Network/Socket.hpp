@@ -94,7 +94,7 @@ public :
     void SetBlocking(bool blocking);
 
     ////////////////////////////////////////////////////////////
-    /// \brief Tell whether the socket is blocking or non-blocking mode
+    /// \brief Tell whether the socket is in blocking or non-blocking mode
     ///
     /// \return True if the socket is blocking, false otherwise
     ///
@@ -113,19 +113,6 @@ protected :
     {
         Tcp, ///< TCP protocol
         Udp  ///< UDP protocol
-    };
-
-    ////////////////////////////////////////////////////////////
-    /// \brief Structure holding the data of a pending packet
-    ///
-    ////////////////////////////////////////////////////////////
-    struct PendingPacket
-    {
-        PendingPacket();
-
-        Uint32            Size;         ///< Data of packet size
-        std::size_t       SizeReceived; ///< Number of size bytes received so far
-        std::vector<char> Data;         ///< Data of the packet
     };
 
     ////////////////////////////////////////////////////////////
@@ -176,11 +163,6 @@ protected :
     ///
     ////////////////////////////////////////////////////////////
     void Close();
-
-    ////////////////////////////////////////////////////////////
-    // Member data
-    ////////////////////////////////////////////////////////////
-    PendingPacket myPendingPacket; ///< Temporary data of the packet currently being received
 
 private :
 

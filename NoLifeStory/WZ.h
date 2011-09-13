@@ -12,6 +12,7 @@ namespace NLS {
 		Node& operator= (const Node&);
 		Node& operator[] (const string&);
 		Node& operator[] (const char[]);
+		Node& operator[] (const int&);
 		Node& g(const string&);
 		map<string, Node>::iterator Begin();
 		map<string, Node>::iterator End();
@@ -19,6 +20,7 @@ namespace NLS {
 		operator string();
 		operator double();
 		operator int();
+		operator Sprite();
 		Node& operator= (const string&);
 		Node& operator= (const double&);
 		Node& operator= (const int&);
@@ -27,73 +29,44 @@ namespace NLS {
 	namespace WZ {
 		extern Node Top;
 		extern Node Empty;
-		enum PropertyType {
-			PropUnknown = 0,
-			PropPrim = 400,
-			PropNull = 401,
-			PropUnsignedShort = 402,
-			PropCompressedInt = 403,
-			PropVector = 404,
-			PropFloat = 405,
-			PropDouble = 406,
-			PropString = 407,
-			PropUOL = 408,
-			PropSub = 500,
-			PropCanvas = 501,
-			PropConvex = 502,
-			PropPNG = 700,
-			PropMP3 = 800
-		};
-		class Header;
-		class Directory;
-		class File;
-		class Image;
-		class SubProperty;
-		class PNGProperty;
-		class SoundProperty;
-		//And now lets define them somehow
-		class Header {
+		class File {
 		public:
-			Header(File* file);
+			File(Node n);
+			ifstream file;
 			string ident;
 			uint64_t fileSize;
 			uint32_t fileStart;
-			int16_t version;
 			string copyright;
-			uint32_t versionHash;
-		};
-		class Directory {
-		public:
-			Directory(File* file, Node n);
-			File* file;
-		};
-		class File {
-		public:
-			File(string name);
-			ifstream file;
-			uint32_t Hash(uint16_t enc, uint16_t real);
-			uint16_t version;
-			Header* head;
+			set<sf::Thread*> threads;
 		};
 		class Image {
 		public:
-			Image(File* file, Node n, uint32_t offset);
+			Image(ifstream* file, Node n, uint32_t offset);
 			void Parse();
 			Node n;
 			string name;
 			uint32_t offset;
-			File* file;
+			ifstream* file;
 		};
-		class SubProperty {
+		class PNGProperty {
 		public:
-			SubProperty(File* file, Node n, uint32_t offset);
+			PNGProperty(ifstream* file, Sprite spr);
+			void Parse();
+			ifstream* file;
+			Sprite sprite;
+			int32_t format;
+			uint8_t format2;
+			int32_t length;
+			uint32_t offset;
 		};
-		class ExtendedProperty {
+		class SoundProperty {
 		public:
-			ExtendedProperty(File* file, Node n, uint32_t offset, uint32_t eob);
 		};
+		void Directory(File* file, Node n);
+		void SubProperty(ifstream& file, Node n, uint32_t offset);
+		void ExtendedProperty(ifstream& file, Node n, uint32_t offset);
 		//Functions
-		bool Init(string path);
+		void Init(const string& path);
 	}
 	class NodeData {
 	public:
@@ -101,6 +74,7 @@ namespace NLS {
 		string stringValue;
 		double floatValue;
 		int intValue;
+		Sprite sprite;
 		Node parent;
 		string name;
 		map <string, Node> children;

@@ -42,30 +42,37 @@ inline int toint(const string& t) {
 	return d;
 }
 
-inline double sqr(double x) {
+inline double sqr(const double& x) {
 	return x*x;
 }
 
-inline double pdis(double x1, double y1, double x2, double y2) {
+inline double pdis(const double& x1, const double& y1, const double& x2, const double& y2) {
 	return sqrt(sqr(x1-x2)+sqr(y1-y2));
 }
 
-inline double pdir(double x1, double y1, double x2, double y2) {
+inline double pdir(const double& x1, const double& y1, const double& x2, const double& y2) {
 	return radtodeg*atan2(y2-y1, x2-x1);
 }
 
-inline double ldx (double len, double dir) {
+inline double ldx (const double& len, const double& dir) {
 	return cos(dir*degtorad)*len;
 }
 
-inline double ldy (double len, double dir) {
+inline double ldy (const double& len, const double& dir) {
 	return sin(dir*degtorad)*len;
 }
 
-inline double angdif (double angle1, double angle2) {
+inline double angdif (const double& angle1, const double& angle2) {
 	return fmod(fmod(angle1-angle2, 360)+540, 360)-180;
 }
 
-inline double sign (double x) {
+inline double sign (const double& x) {
 	return x>0?1:x<0?-1:0;
+}
+
+inline bool exists (const string& name) {
+	ifstream file(name);
+	bool check = file.is_open();
+	file.close();
+	return check;
 }

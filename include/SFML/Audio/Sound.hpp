@@ -52,16 +52,12 @@ public :
     Sound();
 
     ////////////////////////////////////////////////////////////
-    /// \brief Construct the sound with parameters
+    /// \brief Construct the sound with a buffer
     ///
-    /// \param buffer   Sound buffer containing the audio data to play with the sound
-    /// \param loop     Should the sound loop?
-    /// \param pitch    Pitch of the sound
-    /// \param volume   Volume of the sound, in the range [0, 100]
-    /// \param position 3D position of the sound source in the audio scene
+    /// \param buffer Sound buffer containing the audio data to play with the sound
     ///
     ////////////////////////////////////////////////////////////
-    Sound(const SoundBuffer& buffer, bool loop = false, float pitch = 1.f, float volume = 100.f, const Vector3f& position = Vector3f(0, 0, 0));
+    Sound(const SoundBuffer& buffer);
 
     ////////////////////////////////////////////////////////////
     /// \brief Copy constructor
@@ -149,12 +145,12 @@ public :
     /// The playing position can be changed when the sound is
     /// either paused or playing.
     ///
-    /// \param timeOffset New playing position, in seconds
+    /// \param timeOffset New playing position, in milliseconds
     ///
     /// \see GetPlayingOffset
     ///
     ////////////////////////////////////////////////////////////
-    void SetPlayingOffset(float timeOffset);
+    void SetPlayingOffset(Uint32 timeOffset);
 
     ////////////////////////////////////////////////////////////
     /// \brief Get the audio buffer attached to the sound
@@ -177,12 +173,12 @@ public :
     ////////////////////////////////////////////////////////////
     /// \brief Get the current playing position of the sound
     ///
-    /// \return Current playing position, in seconds
+    /// \return Current playing position, in milliseconds
     ///
     /// \see SetPlayingOffset
     ///
     ////////////////////////////////////////////////////////////
-    float GetPlayingOffset() const;
+    Uint32 GetPlayingOffset() const;
 
     ////////////////////////////////////////////////////////////
     /// \brief Get the current status of the sound (stopped, paused, playing)

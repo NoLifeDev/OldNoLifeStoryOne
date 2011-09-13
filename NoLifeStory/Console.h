@@ -9,8 +9,8 @@ namespace NLS {
 		Console();
 		~Console();
 		void Loop();
-		void HandleCommand(string command);
-		void Push(string str);
+		void HandleCommand(const string& command);
+		void Push(const string& str);
 		void Toggle();
 	private:
 		sf::RenderWindow* window;
@@ -22,9 +22,9 @@ namespace NLS {
 		sf::Thread* t;
 		sf::Mutex m;
 		bool toggle, show;
+		ofstream file;
 	};
 	extern Console* console;
-	class Endl_ {} extern Endl;
 	class Stream {
 	public:
 		template <class T>
@@ -32,8 +32,7 @@ namespace NLS {
 			line << v;
 			return *this;
 		}
-		template <>
-		Stream& operator << <Endl_> (Endl_) {
+		Stream& operator << (ostream&(ostream&)) {
 			string s = line.str();
 			if (!s.empty()) {
 				console->Push(s);
@@ -44,9 +43,9 @@ namespace NLS {
 	private:
 		stringstream line;
 	};
-	inline Stream& C(string type) {
+	inline Stream& C(const string& type) {
 		static Stream s;
-		s << Endl;
+		s << endl;
 		s << type << ": ";
 		return s;
 	}

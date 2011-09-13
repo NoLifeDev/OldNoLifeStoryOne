@@ -15,9 +15,3 @@ SFML2
 
 Then make yourself a makefile or project for whatever IDE you use, and build it somehow.
 It's all standard C++ so you shouldn't have any major problems.
-
-TODO:
-Add the ping packet
-Deal with new connections
-Send the version info to the client
-Add packet encryption/decryption

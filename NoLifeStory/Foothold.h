@@ -15,7 +15,6 @@ namespace NLS {
 		bool forbid;
 		bool walk;
 		static void Load(Node n);
-		static void Unload();
 		static void Draw();
 	};
 	extern set <Foothold*> footholds;
