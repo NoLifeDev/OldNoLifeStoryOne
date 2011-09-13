@@ -10,7 +10,7 @@ void NLS::Init(const vector<string>& args) {
 	Time.Reset();
 	WZ::Init(args.size()>1?args[1]:"");
 	Time.Step();
-	C("WZ") << "Directories initialized in " << floor(Time.tdelta) << " ms" << endl;
+	C("WZ") << "Directories initialized in " << Time.tdelta << " ms" << endl;
 	Time.Reset();
 	Graphics::Init();
 	Map::Load("10000", "");

@@ -15,6 +15,7 @@ namespace NLS {
 	};
 	class Sprite {
 	public:
+		Sprite();
 		void Draw(int x, int y, bool flipped = false, float alpha = 1, float rotation = 0);
 		void GetTexture();
 		SpriteData* data;

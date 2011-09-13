@@ -4,18 +4,14 @@
 ////////////////////////////////////////////////////
 
 namespace NLS {
-	class Obj {
+	class AniSprite {
 	public:
-		void Draw();
-		static void Load(Node n);
-		int x, y, z;
-		bool repeat;
-		int movetype;
-		double movew, moveh, movep, mover;
-		int flow;
-		double rx, ry;
-		bool f;
-		AniSprite spr;
-		static set <Obj*> Objs;
+		AniSprite();
+		void Set(class Node n);
+		void Draw(int x, int y, bool flipped = false, float alpha = 1, float rotation = 0);
+		void Step();
+		Node n, f;
+		int delay;
+		int frame;
 	};
-};
+}

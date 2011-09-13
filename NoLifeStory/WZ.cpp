@@ -197,14 +197,13 @@ void NLS::WZ::File(Node n) {
 	ifstream *file = new ifstream(filename, ios::in|ios::binary);
 	if (!file->is_open()) {
 		C("ERROR") << "Failed to load " << filename << endl;
-		return;
-		//throw(273);
+		return;//Don't throw an error because of Nexon's stupid ExcelReport crap
 	}
 	string ident(4, '\0');
 	file->read(const_cast<char*>(ident.c_str()), 4);
 	if (ident != "PKG1") {
 		C("ERROR") << "Invalid ident header for " << filename << endl;
-		return;
+		throw(273);
 	}
 	uint64_t fileSize = Read<uint64_t>(file);
 	uint32_t fileStart = Read<uint32_t>(file);
@@ -247,6 +246,7 @@ void NLS::WZ::File(Node n) {
 		}
 		if (c == 0) {
 			C("ERROR") << "Unable to find a top level .img for hash verification" << endl;
+			throw(273);
 		}
 		bool success = false;
 		for (uint8_t j = 0; j < 2 and !success; j++) {
@@ -289,6 +289,7 @@ void NLS::WZ::File(Node n) {
 		int16_t eversion = Read<int16_t>(file);
 		if (eversion != EncVersion) {
 			C("ERROR") << "Version of WZ file does not match existing files" << endl;
+			throw(273);
 		}
 	}
 	set <sf::Thread*> threads;

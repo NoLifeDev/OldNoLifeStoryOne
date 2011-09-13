@@ -4,7 +4,7 @@
 ////////////////////////////////////////////////////
 #include "Global.h"
 
-set<NLS::Tile*> NLS::Tile::Tiles;
+set <NLS::Tile*> NLS::Tile::Tiles;
 
 void NLS::Tile::Load(Node n) {
 	for (auto it = Tiles.begin(); it != Tiles.end(); it++) {

@@ -13,7 +13,7 @@ void NLS::_Time::Reset() {
 }
 
 void NLS::_Time::Step() {
-	double temp = clock.GetElapsedTime();
+	uint32_t temp = clock.GetElapsedTime();
 	delta = temp-tdelta;
 	tdelta = temp;
 }

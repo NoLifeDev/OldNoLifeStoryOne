@@ -15,6 +15,7 @@
 #include "Foothold.h"
 #include "Client.h"
 #include "Time.h"
+#include "AniSprite.h"
 #include "Network.h"
 #include "Obj.h"
 #include "Tile.h"

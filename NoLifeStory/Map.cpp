@@ -41,6 +41,7 @@ void NLS::Map::Load() {
 	}
 	Foothold::Load(node);
 	Tile::Load(node);
+	Obj::Load(node);
 	View.tx = 0;
 	View.ty = 0;
 	View.vx = 0;
@@ -56,6 +57,9 @@ void NLS::Map::Draw() {
 }
 
 void NLS::Map::Layer::Draw() {
+	for (auto it = Objs.begin(); it != Objs.end(); it++) {
+		(*it)->Draw();
+	}
 	for (auto it = Tiles.begin(); it != Tiles.end(); it++) {
 		(*it)->Draw();
 	}

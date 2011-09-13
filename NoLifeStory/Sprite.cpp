@@ -4,6 +4,10 @@
 ////////////////////////////////////////////////////
 #include "Global.h"
 
+NLS::Sprite::Sprite() {
+	data = 0;
+}
+
 void NLS::Sprite::Draw(int x, int y, bool flipped, float alpha, float rotation) {
 	if (!data) {
 		return;

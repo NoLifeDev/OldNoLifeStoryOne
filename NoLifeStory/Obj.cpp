@@ -4,3 +4,46 @@
 ////////////////////////////////////////////////////
 #include "Global.h"
 
+set <NLS::Obj*> NLS::Obj::Objs;
+
+void NLS::Obj::Load(Node n) {
+	for (auto it = Objs.begin(); it != Objs.end(); it++) {
+		delete *it;
+	}
+	Objs.clear();
+	for (uint8_t i = 0; i < 8; i++) {
+		Node ln = n[i];
+		if (!ln["obj"]) {
+			continue;
+		}
+		for (auto it = ln["obj"].Begin(); it != ln["obj"].End(); it++) {
+			Node on = it->second;
+			string t1 = on["oS"];
+			string t2 = on["l0"];
+			string t3 = on["l1"];
+			string t4 = on["l2"];
+			Node od = WZ::Top["Map"]["Obj"][t1][t2][t3][t4];
+			Obj* o = new Obj;
+			o->x = on["x"];
+			o->y = on["y"];
+			o->z = on["z"];
+			o->spr.Set(od);
+			o->flow = on["flow"];
+			o->f = (int)on["f"];
+			Node d = od[0];
+			o->repeat = (int)d["repeat"];
+			o->movetype = d["moveType"];
+			o->movew = d["moveW"];
+			o->moveh = d["moveH"];
+			o->movep = d["moveP"];
+			o->mover = d["moveR"];
+			Map::Layers[i].Objs.push_back(o);
+			Objs.insert(o);
+		}
+		sort(Map::Layers[i].Objs.begin(), Map::Layers[i].Objs.end(), [](Obj* o1, Obj* o2){return o1->z < o2->z;});
+	}
+}
+
+void NLS::Obj::Draw() {
+	spr.Draw(x, y, f);
+}

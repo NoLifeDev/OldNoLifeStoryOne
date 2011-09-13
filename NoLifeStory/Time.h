@@ -9,7 +9,7 @@ namespace NLS {
 	public:
 		void Reset();
 		void Step();
-		double delta;
-		double tdelta;
+		uint32_t delta;
+		uint32_t tdelta;
 	} extern Time;
 };
