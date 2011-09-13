@@ -5,6 +5,8 @@
 #pragma once
 
 #include "..\SuperGlobal.h"
+#include "Functions.h"
+#include "CommandFunctions.h"
 #include "Console.h"
 #include "Utilities.h"
 #include "Sprite.h"
@@ -19,5 +21,3 @@
 #include "Map.h"
 #include "View.h"
 #include "Config.h"
-#include "Functions.h"
-#include "CommandFunctions.h"
