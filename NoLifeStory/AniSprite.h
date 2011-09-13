@@ -13,5 +13,6 @@ namespace NLS {
 		Node n, f;
 		int delay;
 		int frame;
+		bool repeat;
 	};
 }

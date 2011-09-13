@@ -5,6 +5,7 @@
 #include "Global.h"
 #include "Keys.h"
 
+#pragma region Variables
 string Path;
 NLS::Node NLS::WZ::Top;
 NLS::Node NLS::WZ::Empty;
@@ -18,6 +19,7 @@ uint16_t Version = 0;
 uint32_t VersionHash;
 uint8_t Buf1[0x1000000];
 uint8_t Buf2[0x1000000];
+#pragma endregion
 
 #pragma region Zlib
 void Decompress(uint32_t inLen, uint32_t outLen){
@@ -376,15 +378,44 @@ void NLS::WZ::Image::Parse() {
 	}
 	SubProperty(file, n, offset);
 	function <void(Node)> Resolve = [&Resolve](Node n) {
-		string s = n;
-		if (s.substr(0, 5) == "|UOL|") {
-			s.erase(0, 5);
+		if (n.data->children.find("UOL") != n.data->children.end()) {
+			string s = n["UOL"];
 			C("WZ") << "Resolving UOL: " << s << endl;
-			//TODO: Actually resolve the UOL
-		}
-		for (auto it = n.Begin(); it != n.End(); it++) {
-			if (it->second.data) {
-				Resolve(it->second);
+			string str;
+			vector <string> parts;
+			for (int i = 0; i < s.size(); i++) {
+				if (s[i] == '/') {
+					parts.push_back(str);
+					str = "";
+				} else {
+					str.push_back(s[i]);
+				}
+			}
+			parts.push_back(str);
+			Node nn = n.data->parent;
+			for (auto it = parts.begin(); it != parts.end(); it++) {
+				if (!nn) {
+					break;
+				}
+				if (*it == "..") {
+					nn = nn.data->parent;
+				} else {
+					nn = nn[*it];
+				}
+			}
+			if (nn) {
+				n.data->children = nn.data->children;
+				n.data->floatValue = nn.data->floatValue;
+				n.data->intValue = nn.data->intValue;
+				n.data->stringValue = nn.data->stringValue;
+				n.data->sprite = nn.data->sprite;
+				n.data->image = nn.data->image;
+			}
+		} else {
+			for (auto it = n.Begin(); it != n.End(); it++) {
+				if (it->second.data) {
+					Resolve(it->second);
+				}
 			}
 		}
 	};
@@ -476,12 +507,12 @@ void NLS::WZ::ExtendedProperty(ifstream* file, Node n, uint32_t offset) {
 		uint8_t b = Read<uint8_t>(file);
 		switch (b) {
 		case 0:
-			n.g(name) = string("|UOL|")+ReadEncString(file);
+			n.g(name) = ReadEncString(file);
 			break;
 		case 1:
 			{
 				uint32_t off = Read<uint32_t>(file);
-				n.g(name) = string("|UOL|")+ReadStringOffset(file, offset+off);
+				n.g(name) = ReadStringOffset(file, offset+off);
 				break;
 			}
 		default:
@@ -600,8 +631,9 @@ NLS::Node& NLS::Node::operator= (const Node& other) {
 NLS::Node& NLS::Node::operator[] (const string& key) {
 	if (data) {
 		if (data->image) {
-			data->image->Parse();
+			WZ::Image *img = data->image;
 			data->image = 0;
+			img->Parse();
 		}
 		return data->children[key];
 	} else {
@@ -612,8 +644,9 @@ NLS::Node& NLS::Node::operator[] (const string& key) {
 NLS::Node& NLS::Node::operator[] (const char key[]) {
 	if (data) {
 		if (data->image) {
-			data->image->Parse();
+			WZ::Image *img = data->image;
 			data->image = 0;
+			img->Parse();
 		}
 		return data->children[key];
 	} else {

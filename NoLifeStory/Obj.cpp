@@ -27,16 +27,17 @@ void NLS::Obj::Load(Node n) {
 			o->x = on["x"];
 			o->y = on["y"];
 			o->z = on["z"];
-			o->spr.Set(od);
 			o->flow = on["flow"];
 			o->f = (int)on["f"];
 			Node d = od[0];
-			o->repeat = (int)d["repeat"];
+			o->repeat = !(int)d["repeat"];
 			o->movetype = d["moveType"];
 			o->movew = d["moveW"];
 			o->moveh = d["moveH"];
 			o->movep = d["moveP"];
 			o->mover = d["moveR"];
+			o->spr.Set(od);
+			o->spr.repeat = o->repeat;
 			Map::Layers[i].Objs.push_back(o);
 			Objs.insert(o);
 		}
@@ -45,5 +46,6 @@ void NLS::Obj::Load(Node n) {
 }
 
 void NLS::Obj::Draw() {
+	spr.Step();
 	spr.Draw(x, y, f);
 }

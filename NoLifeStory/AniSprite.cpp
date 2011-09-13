@@ -7,6 +7,7 @@
 NLS::AniSprite::AniSprite() {
 	frame = 0;
 	delay = 0;
+	repeat = true;
 }
 
 void NLS::AniSprite::Set(Node n) {
@@ -33,7 +34,11 @@ void NLS::AniSprite::Step() {
 		delay -= d;
 		frame++;
 		if (!n[frame]) {
-			frame = 0;
+			if (repeat) {
+				frame = 0;
+			} else {
+				frame--;
+			}
 		}
 		f = n[frame];
 	}
