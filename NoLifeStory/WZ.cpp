@@ -32,9 +32,9 @@ void Decompress(uint32_t inLen, uint32_t outLen){
 	inflateInit(&strm);
 	strm.next_out = Buf1;
 	strm.avail_out = outLen;
-	int err = inflate(&strm, Z_NO_FLUSH);
+	int err = inflate(&strm, Z_FINISH);
 	switch(err){
-	case Z_OK:
+	case Z_BUF_ERROR:
 		break;
 	default:
 		NLS::C("ERROR") << "I hate zlib!" << endl;
@@ -380,7 +380,6 @@ void NLS::WZ::Image::Parse() {
 	function <void(Node)> Resolve = [&Resolve](Node n) {
 		if (n.data->children.find("UOL") != n.data->children.end()) {
 			string s = n["UOL"];
-			C("WZ") << "Resolving UOL: " << s << endl;
 			string str;
 			vector <string> parts;
 			for (int i = 0; i < s.size(); i++) {
