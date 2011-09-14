@@ -16,6 +16,7 @@ namespace NLS {
 		double rx, ry;
 		bool f;
 		AniSprite spr;
+		Node n;
 		static set <Obj*> Objs;
 	};
 };

@@ -20,9 +20,9 @@ void NLS::Init(const vector<string>& args) {
 bool NLS::Loop() {
 	Time.Step();
 	static double fps(0);
-	fps = fps*0.99 + (1/max(Time.delta, 1))*1000*0.01;
+	fps = fps*0.99 + (1000/(double)max(Time.delta, 1))*0.01;
 	window->SetTitle("NoLifeStory::FrameRate = "+tostring((int)fps));
-	sf::Sleep(max(20-1000/fps, 0));
+	sf::Sleep(max(fps-100, 0));
 	sf::Event e;
 	while (window->PollEvent(e)) {
 		switch (e.Type) {

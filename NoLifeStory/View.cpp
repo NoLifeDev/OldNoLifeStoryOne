@@ -4,9 +4,9 @@
 ////////////////////////////////////////////////////
 #include "Global.h"
 
-NLS::View_ NLS::View;
+NLS::_View NLS::View;
 
-NLS::View_::View_() {
+NLS::_View::_View() {
 	x = 0;
 	y = 0;
 	vx = 0;
@@ -19,7 +19,7 @@ NLS::View_::View_() {
 	ymax = 0;
 }
 
-void NLS::View_::Step() {
+void NLS::_View::Step() {
 	if (sf::Keyboard::IsKeyPressed(sf::Keyboard::Up)) {
 		ty -= 10;
 	}
@@ -42,4 +42,10 @@ void NLS::View_::Step() {
 	y = vy;
 	glLoadIdentity();
 	glTranslatef(-x, -y, 0);
+	relative = true;
+}
+
+void NLS::_View::Reset() {
+	glLoadIdentity();
+	relative = false;
 }

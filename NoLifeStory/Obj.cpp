@@ -24,6 +24,7 @@ void NLS::Obj::Load(Node n) {
 			string t4 = on["l2"];
 			Node od = WZ::Top["Map"]["Obj"][t1][t2][t3][t4];
 			Obj* o = new Obj;
+			o->n = od;
 			o->x = on["x"];
 			o->y = on["y"];
 			o->z = on["z"];
@@ -47,5 +48,43 @@ void NLS::Obj::Load(Node n) {
 
 void NLS::Obj::Draw() {
 	spr.Step();
-	spr.Draw(x, y, f);
+	double ax = 0;
+	double ay = 0;
+	double ang = 0;
+	switch(movetype) {
+	case 1:
+		if (movep) {
+			ax = movew*sin((double)Time.tdelta*2*PI/movep);
+		} else {
+			ax = movew*sin((double)Time.tdelta/1000);
+		}
+		break;
+	case 2:
+		if (movep) {
+			ay = moveh*sin((double)Time.tdelta*2*PI/movep);
+		} else {
+			ay = moveh*sin((double)Time.tdelta/1000);
+		}
+		break;
+	case 3:
+		ang = (double)Time.tdelta/mover*radtodeg;
+		break;
+	};
+	switch(flow) {
+	case 0:
+		spr.Draw(x+ax, y+ay, f, ang);
+		break;
+	case 1:
+		{
+			x += rx*(double)Time.delta/1000*5;
+			double cx = View.xmax-View.xmin;
+			for(int i = fmod(x-View.x, cx)-cx+View.x; i < View.x+800+cx; i += cx) {
+				spr.Draw(i+ax, y+ay, f, ang);
+			}
+			break;
+		}
+	default:
+		C("ERROR") << "What is this I don't even" << endl;
+		throw(273);
+	}
 }

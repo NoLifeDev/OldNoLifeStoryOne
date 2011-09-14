@@ -7,7 +7,7 @@
 sf::TcpSocket NLS::Network::Socket;
 
 void NLS::Network::Init() {
-	if (Socket.Connect("localhost", 8484, 2000) != sf::Socket::Done) {
+	if (Socket.Connect("127.0.0.1", 8484, 2000) != sf::Socket::Done) {
 		C("ERROR") << "Failed to connect to server at " << Socket.GetRemoteAddress() << endl;
 	} else {
 		C("INFO") << "Connected to LoginServer at 141.157.161.118:8484" << Socket.GetRemoteAddress() << endl;

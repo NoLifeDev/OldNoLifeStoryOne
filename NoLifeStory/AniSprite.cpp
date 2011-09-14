@@ -15,16 +15,21 @@ void NLS::AniSprite::Set(Node n) {
 	delay = 0;
 	this->n = n;
 	f = n[0];
+	a = 1;
 }
 
-void NLS::AniSprite::Draw(int x, int y, bool flipped, float alpha, float rotation) {
-	if (n) {
-		Sprite s = f;
-		s.Draw(x, y, flipped, alpha, rotation);
+void NLS::AniSprite::Draw(int x, int y, bool flipped, float rotation) {
+	if (!n) {
+		return;
 	}
+	Sprite s = f;
+	s.Draw(x, y, flipped, a, rotation);
 }
 
 void NLS::AniSprite::Step() {
+	if (!n) {
+		return;
+	}
 	delay += Time.delta;
 	int d = f["delay"];
 	if (d == 0) {
@@ -42,4 +47,9 @@ void NLS::AniSprite::Step() {
 		}
 		f = n[frame];
 	}
+	if (f["a0"] && (!repeat || f["a1"])) {
+            double a0 = f["a0"];
+            double a1 = f["a1"];
+            a = (a0-(a0-a1)*delay/d)/255;
+    }
 }

@@ -8,11 +8,12 @@ namespace NLS {
 	public:
 		AniSprite();
 		void Set(class Node n);
-		void Draw(int x, int y, bool flipped = false, float alpha = 1, float rotation = 0);
+		void Draw(int x, int y, bool flipped = false, float rotation = 0);
 		void Step();
 		Node n, f;
 		int delay;
 		int frame;
 		bool repeat;
+		float a;
 	};
 }

@@ -7,7 +7,7 @@ namespace NLS {
 	class SpriteData {
 	public:
 		GLuint texture;
-		GLuint width, height;
+		GLint width, height;
 		GLfloat twidth, theight;
 		GLint originx, originy;
 		bool loaded;
