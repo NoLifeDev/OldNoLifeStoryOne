@@ -7,7 +7,9 @@
 NLS::Node NLS::Map::node;
 string NLS::Map::nextmap;
 string NLS::Map::nextportal;
+vector<NLS::Back*> NLS::Map::Backgrounds;
 NLS::Map::Layer NLS::Map::Layers[8];
+vector<NLS::Back*> NLS::Map::Foregrounds;
 
 void NLS::Map::Load(const string& id, const string& portal) {
 	nextmap = id;
@@ -39,9 +41,12 @@ void NLS::Map::Load() {
 		Layers[i].Tiles.clear();
 		Layers[i].Objs.clear();
 	}
+	Backgrounds.clear();
+	Foregrounds.clear();
 	Foothold::Load(node);
 	Tile::Load(node);
 	Obj::Load(node);
+	Back::Load(node);
 	View.tx = 0;
 	View.ty = 0;
 	View.vx = 0;
@@ -51,8 +56,14 @@ void NLS::Map::Load() {
 }
 
 void NLS::Map::Draw() {
+	for (uint32_t i = 0; i < Backgrounds.size(); i++) {
+		Backgrounds[i]->Draw();
+	}
 	for (uint8_t i = 0; i < 8; i++) {
 		Layers[i].Draw();
+	}
+	for (uint32_t i = 0; i < Foregrounds.size(); i++) {
+		Foregrounds[i]->Draw();
 	}
 }
 

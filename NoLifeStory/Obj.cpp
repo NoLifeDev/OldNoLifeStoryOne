@@ -48,8 +48,8 @@ void NLS::Obj::Load(Node n) {
 
 void NLS::Obj::Draw() {
 	spr.Step();
-	double ax = 0;
-	double ay = 0;
+	int ax = 0;
+	int ay = 0;
 	double ang = 0;
 	switch(movetype) {
 	case 1:
@@ -77,8 +77,8 @@ void NLS::Obj::Draw() {
 	case 1:
 		{
 			x += rx*(double)Time.delta/1000*5;
-			double cx = View.xmax-View.xmin;
-			for(int i = fmod(x-View.x, cx)-cx+View.x; i < View.x+800+cx; i += cx) {
+			int cx = View.xmax-View.xmin;
+			for(int i = (x-View.x)%cx-cx+View.x; i < View.x+800+cx; i += cx) {
 				spr.Draw(i+ax, y+ay, f, ang);
 			}
 			break;

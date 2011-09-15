@@ -17,6 +17,8 @@ namespace NLS {
 			vector<Obj*> Objs;
 			vector<Tile*> Tiles;
 		};
+		extern vector<Back*> Backgrounds;
 		extern Layer Layers[8];
+		extern vector<Back*> Foregrounds;
 	};
 };

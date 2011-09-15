@@ -99,6 +99,7 @@
   <ItemGroup>
     <ClInclude Include="..\Resource.h" />
     <ClInclude Include="AniSprite.h" />
+    <ClInclude Include="Back.h" />
     <ClInclude Include="CommandFunctions.h" />
     <ClInclude Include="Client.h" />
     <ClInclude Include="Config.h" />
@@ -120,6 +121,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AniSprite.cpp" />
+    <ClCompile Include="Back.cpp" />
     <ClCompile Include="CommandFunctions.cpp" />
     <ClCompile Include="Client.cpp" />
     <ClCompile Include="Config.cpp" />

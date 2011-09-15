@@ -19,6 +19,7 @@
 #include "Network.h"
 #include "Obj.h"
 #include "Tile.h"
+#include "Back.h"
 #include "Map.h"
 #include "View.h"
 #include "Config.h"

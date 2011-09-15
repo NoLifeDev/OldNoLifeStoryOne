@@ -585,20 +585,19 @@ void NLS::WZ::PNGProperty::Parse() {
 		{
 			uint32_t len = sprite.data->width*sprite.data->height/128;
 			Decompress(length, len);
-			uint32_t t = 0;
-			for (uint32_t i = 0; i < len; i++) {
-				for (uint8_t j = 0; j < 8; j++) {
-					uint8_t b = ((Buf1[i]&(0x01<<(7-j)))>>(7-j))*0xFF;
-					for (uint8_t k = 0; k < 16; k++) {
-						Buf2[t] = b;
-						Buf2[t+1] = b;
-						Buf2[t+2] = b;
-						Buf2[t+3] = 0xFF;
-						t += 4;
-					}
+			for (uint32_t i = 0; i < len*2; i++) {
+				uint8_t b4 = (Buf1[i*2]&0x0F)|((Buf1[i*2]&0x0F)<<4);
+				uint8_t b3 = (Buf1[i*2]&0xF0)|((Buf1[i*2]&0xF0)>>4);
+				uint8_t b2 = (Buf1[i*2+1]&0x0F)|((Buf1[i*2+1]&0x0F)<<4);
+				uint8_t b1 = (Buf1[i*2+1]&0xF0)|((Buf1[i*2+1]&0xF0)>>4);
+				for (uint32_t j = 0; j < 256; j++) {
+					Buf2[i*1024+j*4] = b1;
+					Buf2[i*1024+j*4+1] = b2;
+					Buf2[i*1024+j*4+2] = b3;
+					Buf2[i*1024+j*4+3] = b4;
 				}
-				glTexImage2D(GL_TEXTURE_2D, 0, 4, sprite.data->width, sprite.data->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, Buf2);
 			}
+			glTexImage2D(GL_TEXTURE_2D, 0, 4, sprite.data->width, sprite.data->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, Buf2);
 			break;
 		}
 	default:
