@@ -10,6 +10,6 @@ namespace NLS {
 		void Draw();
 		int x, y, z;
 		Sprite spr;
-		static set<Tile*> Tiles;
+		static set <Tile*> Tiles;
 	};
 };

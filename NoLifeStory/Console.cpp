@@ -9,7 +9,7 @@ NLS::Console* NLS::console;
 NLS::Console::Console() {
 	shutdown = false;
 	toggle = false;
-	show = false;
+	show = true;
 	t = new sf::Thread([&](){this->Loop();});
 	t->Launch();
 }

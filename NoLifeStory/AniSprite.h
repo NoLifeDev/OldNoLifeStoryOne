@@ -2,16 +2,18 @@
 // This file is part of NoLifeStory.              //
 // Please see SuperGlobal.h for more information. //
 ////////////////////////////////////////////////////
+
 namespace NLS {
-	class _View {
+	class AniSprite {
 	public:
-		int x, y;
-		double vx, vy;
-		double tx, ty;
-		int xmin, xmax, ymin, ymax;
-		bool relative;
+		AniSprite();
+		void Set(class Node n);
+		void Draw(int x, int y, bool flipped = false, float rotation = 0);
 		void Step();
-		void Reset();
-		_View();
-	} extern View;
-};
+		Node n, f;
+		int delay;
+		int frame;
+		bool repeat;
+		float a;
+	};
+}

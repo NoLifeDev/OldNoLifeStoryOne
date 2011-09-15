@@ -3,15 +3,21 @@
 // Please see SuperGlobal.h for more information. //
 ////////////////////////////////////////////////////
 namespace NLS {
-	class _View {
+	class Back {
 	public:
+		void Draw();
+		static void Load(Node n);
+		AniSprite aspr;
+		Sprite spr;
 		int x, y;
-		double vx, vy;
-		double tx, ty;
-		int xmin, xmax, ymin, ymax;
-		bool relative;
-		void Step();
-		void Reset();
-		_View();
-	} extern View;
+		int rx, ry;
+		int cx, cy;
+		int type;
+		int movetype;
+		double movew, moveh, movep, mover;
+		bool repeat;
+		bool f;
+		bool ani;
+		static set <Back*> Backs;
+	};
 };

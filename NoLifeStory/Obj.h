@@ -8,6 +8,15 @@ namespace NLS {
 	public:
 		void Draw();
 		static void Load(Node n);
-		double x, y;
+		int x, y, z;
+		bool repeat;
+		int movetype;
+		double movew, moveh, movep, mover;
+		int flow;
+		double rx, ry;
+		bool f;
+		AniSprite spr;
+		Node n;
+		static set <Obj*> Objs;
 	};
 };

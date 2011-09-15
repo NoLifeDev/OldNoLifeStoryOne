@@ -36,6 +36,7 @@ void NLS::Graphics::Draw() {
 	View.Step();
 	Map::Draw();
 	Foothold::Draw();
+	View.Reset();
 	window->Display();
 	switch (glGetError()) {
 	case GL_NO_ERROR:
