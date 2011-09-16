@@ -11,5 +11,7 @@ namespace NLS {
 		void Step();
 		uint32_t delta;
 		uint32_t tdelta;
+		double fps;
+		bool output;
 	} extern Time;
 };

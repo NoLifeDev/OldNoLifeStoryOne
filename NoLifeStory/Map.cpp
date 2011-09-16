@@ -6,6 +6,7 @@
 
 NLS::Node NLS::Map::node;
 string NLS::Map::nextmap;
+string NLS::Map::curmap;
 string NLS::Map::nextportal;
 vector<NLS::Back*> NLS::Map::Backgrounds;
 NLS::Map::Layer NLS::Map::Layers[8];
@@ -17,6 +18,12 @@ void NLS::Map::Load(const string& id, const string& portal) {
 }
 
 void NLS::Map::Load() {
+	if (curmap == nextmap) {
+		C("ERROR") << "The specified map is already loaded" << endl;
+		return;
+	}
+	curmap = nextmap;
+	Time.Reset();
 	char zone;
 	if (nextmap == "login") {
 		//Uh....
