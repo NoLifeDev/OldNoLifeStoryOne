@@ -11,6 +11,7 @@ namespace NLS {
 		extern Node node;
 		extern string nextmap;
 		extern string nextportal;
+		extern string curmap;
 		class Layer {
 		public:
 			void Draw();

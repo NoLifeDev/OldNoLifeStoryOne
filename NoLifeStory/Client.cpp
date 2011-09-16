@@ -10,8 +10,6 @@ void NLS::Init(const vector<string>& args) {
 	Time.Reset();
 	WZ::Init(args.size()>1?args[1]:"");
 	Time.Step();
-	C("WZ") << "Directories initialized in " << Time.tdelta << " ms" << endl;
-	Time.Reset();
 	Graphics::Init();
 	BASS_Init(-1, 44100, 0, window->GetSystemHandle(), 0);
 	Map::Load("10000", "");
@@ -19,11 +17,6 @@ void NLS::Init(const vector<string>& args) {
 }
 
 bool NLS::Loop() {
-	Time.Step();
-	static double fps(0);
-	fps = fps*0.99 + (1000/(double)max(Time.delta, 1))*0.01;
-	window->SetTitle("NoLifeStory::FrameRate = "+tostring((int)fps));
-	sf::Sleep(max(fps-100, 0));
 	sf::Event e;
 	while (window->PollEvent(e)) {
 		switch (e.Type) {

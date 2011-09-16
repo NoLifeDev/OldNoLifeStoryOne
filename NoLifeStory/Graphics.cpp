@@ -4,7 +4,7 @@
 ////////////////////////////////////////////////////
 #include "Global.h"
 
-sf::Window* NLS::window;
+sf::Window* NLS::window = 0;
 
 void NLS::Graphics::Init() {
 	window = new sf::Window(sf::VideoMode(800, 600), "NoLifeStory::Loading", sf::Style::Titlebar, sf::ContextSettings(0, 0, 0, 2, 0));
@@ -37,6 +37,8 @@ void NLS::Graphics::Draw() {
 	Map::Draw();
 	Foothold::Draw();
 	View.Reset();
+	Time.Step();
+	window->SetTitle("NoLifeStory::FrameRate = "+tostring((int)Time.fps));
 	window->Display();
 	switch (glGetError()) {
 	case GL_NO_ERROR:
