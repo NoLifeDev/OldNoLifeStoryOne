@@ -498,10 +498,10 @@ void NLS::WZ::ExtendedProperty(ifstream* file, Node n, uint32_t offset) {
 	} else if (name == "Shape2D#Convex2D") {
 		int32_t ec = ReadCInt(file);
 		for (int i = 0; i < ec; i++) {
-			ExtendedProperty(file, n.g(name), offset);
+			ExtendedProperty(file, n.g(tostring(ec)), offset);
 		}
 	} else if (name == "Sound_DX8") {
-		new SoundProperty(file, n.g(name));
+		new SoundProperty(file, n);
 	} else if (name == "UOL") {
 		file->seekg(1, ios::cur);
 		uint8_t b = Read<uint8_t>(file);
@@ -611,12 +611,15 @@ void NLS::WZ::PNGProperty::Parse() {
 #pragma region Sound Properties
 NLS::WZ::SoundProperty::SoundProperty(ifstream* file, Node n) {
 	file->seekg(1, ios::cur);
-	int32_t slen = ReadCInt(file);
+	slen = ReadCInt(file);
 	int32_t mlen = ReadCInt(file);
 	data = new uint8_t[slen];
-	file->read((char*)data+2, slen);
-	n.data->sound = new sf::SoundBuffer;
-	n.data->sound->LoadFromMemory(data, mlen+82);
+	file->seekg(82, ios::cur);
+	file->read((char*)data, slen);
+	ofstream out(n.data->name+".mp3", ios::binary|ios::out);
+	out.write((char*)data, slen);
+	out.close();
+	n.data->sound = this;
 }
 #pragma endregion
 

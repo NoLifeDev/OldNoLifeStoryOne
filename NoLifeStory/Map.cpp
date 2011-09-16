@@ -38,8 +38,6 @@ void NLS::Map::Load() {
 	string bgm = node["info"]["bgm"];
 	auto p = bgm.find('/');
 	Node s = WZ::Top["Sound"][bgm.substr(0, p)][bgm.substr(p+1)];
-	sf::Sound snd(*s.data->sound);
-	snd.Play();
 	for (uint8_t i = 0; i < 8; i++) {
 		Layers[i].Tiles.clear();
 		Layers[i].Objs.clear();
