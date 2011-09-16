@@ -19,6 +19,7 @@ uint16_t Version = 0;
 uint32_t VersionHash;
 uint8_t Buf1[0x1000000];
 uint8_t Buf2[0x1000000];
+uint8_t soundHeader[] = {0x02, 0x83, 0xEB, 0x36, 0xE4, 0x4F, 0x52, 0xCE, 0x11, 0x9F, 0x53, 0x00, 0x20, 0xAF, 0x0B, 0xA7, 0x70, 0x8B, 0xEB, 0x36, 0xE4, 0x4F, 0x52, 0xCE, 0x11, 0x9F, 0x53, 0x00, 0x20, 0xAF, 0x0B, 0xA7, 0x70, 0x00, 0x01, 0x81, 0x9F, 0x58, 0x05, 0x56, 0xC3, 0xCE, 0x11, 0xBF, 0x01, 0x00, 0xAA, 0x00, 0x55, 0x59, 0x5A, 0x1E, 0x55, 0x00, 0x02, 0x00,/*FRQ 56*/0xAA, 0xBB, 0xCC, 0xDD/*/FRQ 59*/, 0x10, 0x27, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x0C, 0x00, 0x01, 0x00, 0x02, 0x00, 0x00, 0x00, 0x0A, 0x02, 0x01, 0x00, 0x00, 0x00};
 #pragma endregion
 
 #pragma region Zlib
@@ -500,7 +501,7 @@ void NLS::WZ::ExtendedProperty(ifstream* file, Node n, uint32_t offset) {
 			ExtendedProperty(file, n.g(name), offset);
 		}
 	} else if (name == "Sound_DX8") {
-		//TODO: Do something with the mp3 property
+		new SoundProperty(file, n.g(name));
 	} else if (name == "UOL") {
 		file->seekg(1, ios::cur);
 		uint8_t b = Read<uint8_t>(file);
@@ -532,11 +533,6 @@ NLS::WZ::PNGProperty::PNGProperty(ifstream* file, Sprite spr) {
 	sprite.data->loaded = false;
 	sprite.data->width = ReadCInt(file);
 	sprite.data->height = ReadCInt(file);
-	uint32_t w, h;
-	for (w = 1; w < sprite.data->width; w <<= 1) {}
-	for (h = 1; h < sprite.data->height; h <<= 1) {}
-	sprite.data->twidth = (float)sprite.data->width/w;
-	sprite.data->theight = (float)sprite.data->height/h;
 	format = ReadCInt(file);
 	format2 = Read<uint8_t>(file);
 	file->seekg(4, ios_base::cur);
@@ -609,6 +605,18 @@ void NLS::WZ::PNGProperty::Parse() {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
 	sprite.data->loaded = true;
+}
+#pragma endregion
+
+#pragma region Sound Properties
+NLS::WZ::SoundProperty::SoundProperty(ifstream* file, Node n) {
+	file->seekg(1, ios::cur);
+	int32_t slen = ReadCInt(file);
+	int32_t mlen = ReadCInt(file);
+	data = new uint8_t[slen];
+	file->read((char*)data+2, slen);
+	n.data->sound = new sf::SoundBuffer;
+	n.data->sound->LoadFromMemory(data, mlen+82);
 }
 #pragma endregion
 

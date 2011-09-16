@@ -8,7 +8,6 @@ namespace NLS {
 	public:
 		GLuint texture;
 		GLint width, height;
-		GLfloat twidth, theight;
 		GLint originx, originy;
 		bool loaded;
 		void* png;

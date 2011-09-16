@@ -10,6 +10,7 @@
 #include "Console.h"
 #include "Utilities.h"
 #include "Sprite.h"
+#include "Sound.h"
 #include "WZ.h"
 #include "Graphics.h"
 #include "Foothold.h"

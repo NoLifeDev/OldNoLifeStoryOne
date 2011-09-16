@@ -84,6 +84,9 @@
     <ClInclude Include="Back.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Sound.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WZ.cpp">

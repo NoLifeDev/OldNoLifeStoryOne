@@ -81,6 +81,11 @@ namespace NLS {
 		};
 		class SoundProperty {
 		public:
+			SoundProperty(ifstream* file, Node n);
+			void Parse();
+			int32_t slen;
+			uint32_t offset;
+			uint8_t* data;
 		};
 		void SubProperty(ifstream* file, Node n, uint32_t offset);
 		void ExtendedProperty(ifstream* file, Node n, uint32_t offset);
@@ -93,6 +98,7 @@ namespace NLS {
 		double floatValue;
 		int intValue;
 		Sprite sprite;
+		sf::SoundBuffer *sound;
 		Node parent;
 		string name;
 		map <string, Node> children;
