@@ -614,11 +614,13 @@ NLS::WZ::SoundProperty::SoundProperty(ifstream* file, Node n) {
 	slen = ReadCInt(file);
 	int32_t mlen = ReadCInt(file);
 	data = new uint8_t[slen];
-	file->seekg(82, ios::cur);
+	uint8_t header[82];
+	file->read((char*)&header[0], 82);
 	file->read((char*)data, slen);
-	ofstream out(n.data->name+".mp3", ios::binary|ios::out);
-	out.write((char*)data, slen);
-	out.close();
+	frequency = *(uint32_t*)&header[56];
+	//ofstream out(n.data->name+".mp3", ios::binary|ios::out);
+	///out.write((char*)data, slen);
+	///out.close();
 	n.data->sound = this;
 }
 #pragma endregion

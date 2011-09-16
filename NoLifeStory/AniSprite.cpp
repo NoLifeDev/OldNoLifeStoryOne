@@ -36,7 +36,7 @@ void NLS::AniSprite::Step() {
 		d = 100;
 	}
 	if (delay > d) {
-		delay -= d;
+		delay  = 0;
 		frame++;
 		if (!n[frame]) {
 			if (repeat) {

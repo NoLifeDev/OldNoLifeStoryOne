@@ -50,6 +50,9 @@
 //Zlib
 #include <zlib.h>
 
+//Bass
+#include <bass.h>
+
 //The entire STL
 #include <algorithm>
 #include <allocators>

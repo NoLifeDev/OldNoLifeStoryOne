@@ -13,6 +13,7 @@ void NLS::Init(const vector<string>& args) {
 	C("WZ") << "Directories initialized in " << Time.tdelta << " ms" << endl;
 	Time.Reset();
 	Graphics::Init();
+	BASS_Init(-1, 44100, 0, window->GetSystemHandle(), 0);
 	Map::Load("10000", "");
 	Map::Load();
 }
@@ -48,4 +49,5 @@ bool NLS::Loop() {
 }
 
 void NLS::Unload() {
+	BASS_Free();
 }

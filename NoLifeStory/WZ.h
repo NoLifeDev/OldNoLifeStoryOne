@@ -85,6 +85,7 @@ namespace NLS {
 			void Parse();
 			int32_t slen;
 			uint8_t* data;
+			uint32_t frequency;
 		};
 		void SubProperty(ifstream* file, Node n, uint32_t offset);
 		void ExtendedProperty(ifstream* file, Node n, uint32_t offset);
