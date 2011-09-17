@@ -4,6 +4,8 @@
 ////////////////////////////////////////////////////
 #include "Global.h"
 
+string maps[] = {"100000000", "200000000", "300000000", "600000000"};
+
 void NLS::Init(const vector<string>& args) {
 	C("INFO") << "Initializing NoLifeStory" << endl;
 	Network::Init();
@@ -35,6 +37,11 @@ bool NLS::Loop() {
 		}
 	}
 	Graphics::Draw();
+	static int i(0);
+	if (i>4) {
+		return false;
+	}
+	Map::Load(maps[i++], "");
 	if (!Map::nextmap.empty()) {
 		Map::Load();
 	}
