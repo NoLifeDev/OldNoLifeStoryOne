@@ -28,7 +28,9 @@ void NLS::Obj::Load(Node n) {
 			o->x = on["x"];
 			o->y = on["y"];
 			o->z = on["z"];
-			o->flow = on["flow"];
+			o->flow = (int)on["flow"];
+			o->rx = on["rx"];
+			o->ry = on["ry"];
 			o->f = (int)on["f"];
 			Node d = od[0];
 			o->repeat = !(int)d["repeat"];
@@ -70,21 +72,14 @@ void NLS::Obj::Draw() {
 		ang = (double)Time.tdelta/mover*radtodeg;
 		break;
 	};
-	switch(flow) {
-	case 0:
-		spr.Draw(x+ax, y+ay, f, ang);
-		break;
-	case 1:
-		{
-			x += rx*(double)Time.delta/1000*5;
-			int cx = View.xmax-View.xmin;
-			for(int i = (x-View.x)%cx-cx+View.x; i < View.x+800+cx; i += cx) {
-				spr.Draw(i+ax, y+ay, f, ang);
-			}
-			break;
+	if (flow) {
+		ax += (double)Time.tdelta*rx/1000*5;
+		//int cx = View.xmax-View.xmin;
+		int cx = 800;//For now
+		for(int i = (x+ax-View.x)%cx-cx+View.x; i < View.x+800+cx; i += cx) {
+			spr.Draw(i, y+ay, f, ang);
 		}
-	default:
-		C("ERROR") << "What is this I don't even" << endl;
-		throw(273);
+	} else {
+		spr.Draw(x+ax, y+ay, f, ang);
 	}
 }

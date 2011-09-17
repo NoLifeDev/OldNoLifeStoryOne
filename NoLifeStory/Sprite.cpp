@@ -12,11 +12,11 @@ void NLS::Sprite::Draw(int x, int y, bool flipped, float alpha, float rotation) 
 	if (!data) {
 		return;
 	}
-	if (View.relative) {
+	if (View.relative && !rotation) {
 		if (flipped) {
-			if (x+data->width+data->originx < View.x ||
+			if (x+data->originx < View.x ||
 				y+data->height-data->originy < View.y ||
-				x+data->originx > View.x+800 ||
+				x-data->width+data->originx > View.x+800 ||
 				y-data->originy > View.y+600) {
 				return;
 			}
@@ -30,13 +30,13 @@ void NLS::Sprite::Draw(int x, int y, bool flipped, float alpha, float rotation) 
 		}
 	}
 	glPushMatrix();
+	glTranslatef(x, y, 0);
+	glRotatef(rotation, 0, 0, 1);
 	if (flipped) {
-		glTranslatef(data->originx, -data->originy, 0);
+		glTranslatef(-data->width+data->originx, -data->originy, 0);
 	} else {
 		glTranslatef(-data->originx, -data->originy, 0);
 	}
-	glRotatef(rotation, 0, 0, 1);
-	glTranslatef(x, y, 0);
 	glColor4f(1, 1, 1, alpha);
 	GetTexture();
 	glBegin(GL_QUADS);

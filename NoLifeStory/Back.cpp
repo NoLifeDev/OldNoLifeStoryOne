@@ -28,6 +28,11 @@ void NLS::Back::Load(Node n) {
 		b->ry = bn["ry"];
 		b->type = bn["type"];
 		Node bd = WZ::Top["Map"]["Back"][type1];
+		if (!bd) {
+			C("ERROR") << "Failed to find background type " << type1 << endl;
+			delete b;
+			continue;
+		}
 		if (b->ani) {
 			bd = bd["ani"][type2];
 			b->aspr.Set(bd);
@@ -109,12 +114,12 @@ void NLS::Back::Draw() {
 	};
 	auto drawhorz = [&]() {
 		for(int i = (x+ax-View.x+ox+orx)%cx-cx+View.x-ox; i+ox < View.x+800+cx+orx; i += cx) {
-			draw(i+ox, y+oy, f, ang);
+			draw(i+ox, y+oy+ay, f, ang);
 		}
 	};
 	auto drawvert = [&]() {
 		for(int j = (y+ay-View.y+oy+ory)%cy-cy+View.y-oy; j+oy < View.y+600+cy+ory; j += cy) {
-			draw(x+ox, j+oy, f, ang);
+			draw(x+ox+ax, j+oy, f, ang);
 		}
 	};
 	auto drawboth = [&]() {

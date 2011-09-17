@@ -296,13 +296,10 @@ void NLS::WZ::File(Node n) {
 			throw(273);
 		}
 	}
-	set <sf::Thread*> threads;
 	function <void(Node n)> Directory = [&](Node n) {
 		int32_t count = ReadCInt(file);
 		if (count == 0) {
-			sf::Thread* t = new sf::Thread([](Node n){File(n);}, n);
-			t->Launch();
-			threads.insert(t);
+			File(n);
 			return;
 		}
 		set<pair<string, uint32_t>> dirs;
@@ -346,10 +343,6 @@ void NLS::WZ::File(Node n) {
 		}
 	};
 	Directory(n);
-	for (auto it = threads.begin(); it != threads.end(); it++) {
-		(*it)->Wait();
-		delete *it;
-	}
 }
 #pragma endregion
 
