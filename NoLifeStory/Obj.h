@@ -12,7 +12,7 @@ namespace NLS {
 		bool repeat;
 		int movetype;
 		double movew, moveh, movep, mover;
-		int flow;
+		bool flow;
 		double rx, ry;
 		bool f;
 		AniSprite spr;
