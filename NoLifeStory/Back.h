@@ -9,7 +9,7 @@ namespace NLS {
 		static void Load(Node n);
 		AniSprite aspr;
 		Sprite spr;
-		int x, y;
+		int x, y, z;
 		int rx, ry;
 		int cx, cy;
 		int type;

@@ -19,6 +19,7 @@ void NLS::Back::Load(Node n) {
 		Back* b = new Back;
 		b->x = bn["x"];
 		b->y = bn["y"];
+		b->z = toint(it->first);
 		b->f = (int)bn["f"];
 		b->ani = (int)bn["ani"];
 		b->cx = bn["cx"];
@@ -59,6 +60,8 @@ void NLS::Back::Load(Node n) {
 		}
 		Backs.insert(b);
 	}
+	sort(Map::Backgrounds.begin(), Map::Backgrounds.end(), [](Back* b1, Back* b2){return b1->z < b2->z;});
+	sort(Map::Foregrounds.begin(), Map::Foregrounds.end(), [](Back* b1, Back* b2){return b1->z < b2->z;});
 }
 
 void NLS::Back::Draw() {

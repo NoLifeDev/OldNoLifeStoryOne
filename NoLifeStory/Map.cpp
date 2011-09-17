@@ -11,6 +11,7 @@ string NLS::Map::nextportal;
 vector<NLS::Back*> NLS::Map::Backgrounds;
 NLS::Map::Layer NLS::Map::Layers[8];
 vector<NLS::Back*> NLS::Map::Foregrounds;
+NLS::Sound NLS::Map::bgmusic;
 
 void NLS::Map::Load(const string& id, const string& portal) {
 	nextmap = id;
@@ -44,9 +45,8 @@ void NLS::Map::Load() {
 	C("INFO") << "Loading map " << nextmap << endl;
 	string bgm = node["info"]["bgm"];
 	auto p = bgm.find('/');
-	Node s = WZ::Top["Sound"][bgm.substr(0, p)][bgm.substr(p+1)];
-	uint32_t snd = BASS_StreamCreateFile(true, s.data->sound->data, 0, s.data->sound->slen, BASS_SAMPLE_FLOAT|BASS_SAMPLE_LOOP);
-	BASS_ChannelPlay(snd, false);
+	bgmusic = WZ::Top["Sound"][bgm.substr(0, p)][bgm.substr(p+1)];
+	bgmusic.Play(true);
 	for (uint8_t i = 0; i < 8; i++) {
 		Layers[i].Tiles.clear();
 		Layers[i].Objs.clear();

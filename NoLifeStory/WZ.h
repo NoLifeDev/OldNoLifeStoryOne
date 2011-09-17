@@ -83,9 +83,8 @@ namespace NLS {
 		public:
 			SoundProperty(ifstream* file, Node n);
 			void Parse();
-			int32_t slen;
+			int32_t len;
 			uint8_t* data;
-			uint32_t frequency;
 		};
 		void SubProperty(ifstream* file, Node n, uint32_t offset);
 		void ExtendedProperty(ifstream* file, Node n, uint32_t offset);

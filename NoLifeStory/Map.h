@@ -21,5 +21,6 @@ namespace NLS {
 		extern vector<Back*> Backgrounds;
 		extern Layer Layers[8];
 		extern vector<Back*> Foregrounds;
+		extern Sound bgmusic;
 	};
 };

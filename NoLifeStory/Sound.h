@@ -5,6 +5,11 @@
 namespace NLS {
 	class Sound {
 	public:
-
+		Sound();
+		void Play(bool loop = false);
+		void Stop();
+		void operator = (Node);
+		uint32_t stream;
+		WZ::SoundProperty* data;
 	};
 };

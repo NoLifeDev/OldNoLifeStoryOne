@@ -146,6 +146,9 @@
     <ClCompile Include="Graphics.cpp">
       <Filter>Header Files</Filter>
     </ClCompile>
+    <ClCompile Include="Sound.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\maplestory.ico">

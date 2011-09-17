@@ -611,16 +611,11 @@ void NLS::WZ::PNGProperty::Parse() {
 #pragma region Sound Properties
 NLS::WZ::SoundProperty::SoundProperty(ifstream* file, Node n) {
 	file->seekg(1, ios::cur);
-	slen = ReadCInt(file);
-	int32_t mlen = ReadCInt(file);
-	data = new uint8_t[slen];
-	uint8_t header[82];
-	file->read((char*)&header[0], 82);
-	file->read((char*)data, slen);
-	frequency = *(uint32_t*)&header[56];
-	//ofstream out(n.data->name+".mp3", ios::binary|ios::out);
-	///out.write((char*)data, slen);
-	///out.close();
+	len = ReadCInt(file);
+	ReadCInt(file);
+	file->seekg(82, ios::cur);
+	data = new uint8_t[len];
+	file->read((char*)data, len);
 	n.data->sound = this;
 }
 #pragma endregion
