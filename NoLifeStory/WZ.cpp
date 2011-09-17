@@ -296,12 +296,11 @@ void NLS::WZ::File(Node n) {
 			throw(273);
 		}
 	}
-	set <sf::Thread*> threads;
+	set <thread*> threads;
 	function <void(Node n)> Directory = [&](Node n) {
 		int32_t count = ReadCInt(file);
 		if (count == 0) {
-			sf::Thread* t = new sf::Thread([](Node n){File(n);}, n);
-			t->Launch();
+			thread* t = new thread([](Node n){File(n);}, n);
 			threads.insert(t);
 			return;
 		}
@@ -347,7 +346,7 @@ void NLS::WZ::File(Node n) {
 	};
 	Directory(n);
 	for (auto it = threads.begin(); it != threads.end(); it++) {
-		(*it)->Wait();
+		(*it)->join();
 		delete *it;
 	}
 }

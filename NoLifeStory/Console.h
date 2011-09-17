@@ -19,7 +19,7 @@ namespace NLS {
 		vector <string> strs;
 		sf::Font* font;
 		bool shutdown;
-		sf::Thread* t;
+		thread* t;
 		sf::Mutex m;
 		bool toggle, show;
 		ofstream file;

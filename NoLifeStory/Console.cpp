@@ -10,8 +10,7 @@ NLS::Console::Console() {
 	shutdown = false;
 	toggle = false;
 	show = true;
-	t = new sf::Thread([&](){this->Loop();});
-	t->Launch();
+	t = new thread([&](){this->Loop();});
 }
 
 void NLS::Console::Loop() {
@@ -171,6 +170,6 @@ void NLS::Console::Toggle() {
 
 NLS::Console::~Console() {
 	shutdown = true;
-	t->Wait();
+	t->join();
 	delete t;
 }
