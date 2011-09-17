@@ -4,7 +4,10 @@
 ////////////////////////////////////////////////////
 #include "Global.h"
 
+//#define PROFILING
+#ifdef PROFILING
 string maps[] = {"100000000", "200000000", "300000000", "600000000"};
+#endif
 
 void NLS::Init(const vector<string>& args) {
 	C("INFO") << "Initializing NoLifeStory" << endl;
@@ -14,7 +17,7 @@ void NLS::Init(const vector<string>& args) {
 	Time.Step();
 	Graphics::Init();
 	BASS_Init(-1, 44100, 0, window->GetSystemHandle(), 0);
-	Map::Load("10000", "");
+	Map::Load("300000000", "");
 	Map::Load();
 }
 
@@ -37,11 +40,13 @@ bool NLS::Loop() {
 		}
 	}
 	Graphics::Draw();
+#ifdef PROFILING
 	static int i(0);
 	if (i>4) {
 		return false;
 	}
 	Map::Load(maps[i++], "");
+#endif
 	if (!Map::nextmap.empty()) {
 		Map::Load();
 	}

@@ -40,10 +40,12 @@ void NLS::Graphics::Draw() {
 	Time.Step();
 	window->SetTitle("NoLifeStory::FrameRate = "+tostring((int)Time.fps));
 	window->Display();
+#ifdef DEBUG
 	switch (glGetError()) {
 	case GL_NO_ERROR:
 		break;
 	default:
 		C("ERROR") << "OH GOD OPENGL FAILED" << endl;
 	}
+#endif
 }

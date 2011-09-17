@@ -8,15 +8,15 @@
 #define radtodeg 57.295779513082320876798154814105
 
 inline string tostring(const double& t) {
-	stringstream ss;
-	ss << t;
-	return ss.str();
+	static char str[32];
+	sprintf(str, "%f", t);
+	return str;
 }
 
 inline string tostring(const int& t) {
-	stringstream ss;
-	ss << t;
-	return ss.str();
+	static char str[32];
+	sprintf(str, "%i", t);
+	return str;
 }
 
 inline string tostring(const int& t, const int& len) {

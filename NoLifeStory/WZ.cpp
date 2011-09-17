@@ -101,15 +101,16 @@ inline string ReadEncString(ifstream* file) {
 		if (len <= 0) {
 			return string();
 		}
-		string s(len, '\0');
 		uint8_t mask = 0xAA;
+		static char str[1024];
+		file->read(str, len);
 		for (int i = 0; i < len; i++) {
-			uint8_t enc = Read<uint8_t>(file);
-			enc ^= mask;
-			enc ^= WZKey[i];
+			str[i] ^= mask;
+			str[i] ^= WZKey[i];
 			mask++;
-			s[i] = enc;
 		}
+		str[len] = '\0';
+		string s = str;
 		return s;
 	}
 }
