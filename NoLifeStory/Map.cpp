@@ -25,15 +25,14 @@ void NLS::Map::Load() {
 	}
 	curmap = nextmap;
 	Time.Reset();
-	char zone;
-	if (nextmap == "login") {
-		//Uh....
-		throw(273);
+	if (nextmap == "MapLogin") {
+		node = WZ::Top["UI"]["MapLogin"];
+		//throw(273);
 	} else {
 		if (nextmap.size() < 9) {
 			nextmap.insert(0, 9-nextmap.size(), '0');
 		}
-		zone = nextmap[0];
+		char zone = nextmap[0];
 		node = WZ::Top["Map"]["Map"][string("Map")+zone][nextmap];
 	}
 	if (!node) {
@@ -57,10 +56,32 @@ void NLS::Map::Load() {
 	Tile::Load(node);
 	Obj::Load(node);
 	Back::Load(node);
+	Portal::Load(node);
 	View.tx = 0;
 	View.ty = 0;
-	View.vx = 0;
-	View.vy = 0;
+	if (node["info"]["VRLeft"]) {
+		View.xmin = node["info"]["VRLeft"];
+		View.xmax = node["info"]["VRRight"];
+		View.ymin = node["info"]["VRTop"];
+		View.ymax = node["info"]["VRBottom"];
+	} else {
+		View.xmin = 1000000;
+		View.xmax = -1000000;
+		View.ymin = 1000000;
+		View.ymax = -1000000;
+		for (auto it = footholds.begin(); it != footholds.end(); it++) {
+			View.xmin = min(min(View.xmin, (*it)->x1), (*it)->x2);
+			View.ymin = min(min(View.ymin, (*it)->y1), (*it)->y2);
+			View.xmax = max(max(View.xmax, (*it)->x1), (*it)->x2);
+			View.ymax = max(max(View.ymax, (*it)->y1), (*it)->y2);
+		}
+		if (View.xmax-View.xmin > 800) {
+			View.xmin -= 10;
+			View.xmax += 10;
+		}
+		View.ymax += 110;
+		View.ymin = min(View.ymax-600, View.ymin-360);
+	}
 	nextmap = "";
 	nextportal = "";
 }
@@ -71,6 +92,9 @@ void NLS::Map::Draw() {
 	}
 	for (uint8_t i = 0; i < 8; i++) {
 		Layers[i].Draw();
+	}
+	for (uint32_t i = 0; i < Portal::Portals.size(); i++) {
+		Portal::Portals[i]->Draw();
 	}
 	for (uint32_t i = 0; i < Foregrounds.size(); i++) {
 		Foregrounds[i]->Draw();

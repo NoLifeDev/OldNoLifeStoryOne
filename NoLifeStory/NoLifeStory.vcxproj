@@ -120,6 +120,7 @@
     <ClInclude Include="Map.h" />
     <ClInclude Include="Network.h" />
     <ClInclude Include="Obj.h" />
+    <ClInclude Include="Portal.h" />
     <ClInclude Include="Sound.h" />
     <ClInclude Include="Sprite.h" />
     <ClInclude Include="Tile.h" />
@@ -145,6 +146,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Obj.cpp" />
+    <ClCompile Include="Portal.cpp" />
     <ClCompile Include="Sound.cpp" />
     <ClCompile Include="Sprite.cpp" />
     <ClCompile Include="Tile.cpp" />
