@@ -21,151 +21,154 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="WZ.h">
+    <ClInclude Include="..\..\src\NoLifeStory\WZ.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Client.h">
+    <ClInclude Include="..\..\src\NoLifeStory\Client.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Global.h">
+    <ClInclude Include="..\..\src\NoLifeStory\Global.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Network.h">
+    <ClInclude Include="..\..\src\SuperGlobal.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Time.h">
+    <ClInclude Include="..\..\src\NoLifeStory\Network.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Utilities.h">
+    <ClInclude Include="..\..\src\NoLifeStory\Time.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Keys.h">
+    <ClInclude Include="..\..\src\NoLifeStory\Utilities.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Map.h">
+    <ClInclude Include="..\..\src\NoLifeStory\Keys.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Graphics.h">
+    <ClInclude Include="..\..\src\NoLifeStory\Map.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Foothold.h">
+    <ClInclude Include="..\..\src\NoLifeStory\Graphics.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="View.h">
+    <ClInclude Include="..\..\src\NoLifeStory\Foothold.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Console.h">
+    <ClInclude Include="..\..\src\NoLifeStory\View.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Sprite.h">
+    <ClInclude Include="..\..\src\NoLifeStory\Console.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Config.h">
+    <ClInclude Include="..\..\src\NoLifeStory\Sprite.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Obj.h">
+    <ClInclude Include="..\..\src\NoLifeStory\Config.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Tile.h">
+    <ClInclude Include="..\..\src\NoLifeStory\Obj.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="CommandFunctions.h">
+    <ClInclude Include="..\..\src\NoLifeStory\Tile.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\NoLifeStory\CommandFunctions.h">
       <Filter>Header Files\Commands</Filter>
     </ClInclude>
-    <ClInclude Include="Functions.h">
+    <ClInclude Include="..\..\src\NoLifeStory\Functions.h">
       <Filter>Header Files\Commands</Filter>
     </ClInclude>
-    <ClInclude Include="..\Resource.h">
+    <ClInclude Include="..\..\resources\Resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="AniSprite.h">
+    <ClInclude Include="..\..\src\NoLifeStory\AniSprite.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Back.h">
+    <ClInclude Include="..\..\src\NoLifeStory\Back.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Sound.h">
+    <ClInclude Include="..\..\src\NoLifeStory\Sound.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Portal.h">
+    <ClInclude Include="..\..\src\NoLifeStory\Portal.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="WZ.cpp">
+    <ClCompile Include="..\..\src\NoLifeStory\WZ.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Client.cpp">
+    <ClCompile Include="..\..\src\NoLifeStory\Client.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Network.cpp">
+    <ClCompile Include="..\..\src\NoLifeStory\Network.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="NoLifeStory.cpp">
+    <ClCompile Include="..\..\src\NoLifeStory\NoLifeStory.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Time.cpp">
+    <ClCompile Include="..\..\src\NoLifeStory\Time.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Utilities.cpp">
+    <ClCompile Include="..\..\src\NoLifeStory\Utilities.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Map.cpp">
+    <ClCompile Include="..\..\src\NoLifeStory\Map.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Foothold.cpp">
+    <ClCompile Include="..\..\src\NoLifeStory\Foothold.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="View.cpp">
+    <ClCompile Include="..\..\src\NoLifeStory\View.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Console.cpp">
+    <ClCompile Include="..\..\src\NoLifeStory\Console.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Sprite.cpp">
+    <ClCompile Include="..\..\src\NoLifeStory\Sprite.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Config.cpp">
+    <ClCompile Include="..\..\src\NoLifeStory\Config.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Obj.cpp">
+    <ClCompile Include="..\..\src\NoLifeStory\Obj.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Tile.cpp">
+    <ClCompile Include="..\..\src\NoLifeStory\Tile.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CommandFunctions.cpp">
+    <ClCompile Include="..\..\src\NoLifeStory\CommandFunctions.cpp">
       <Filter>Source Files\Commands</Filter>
     </ClCompile>
-    <ClCompile Include="Functions.cpp">
+    <ClCompile Include="..\..\src\NoLifeStory\Functions.cpp">
       <Filter>Source Files\Commands</Filter>
     </ClCompile>
-    <ClCompile Include="AniSprite.cpp">
+    <ClCompile Include="..\..\src\NoLifeStory\AniSprite.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Back.cpp">
+    <ClCompile Include="..\..\src\NoLifeStory\Back.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Sound.cpp">
+    <ClCompile Include="..\..\src\NoLifeStory\Graphics.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Graphics.cpp">
+    <ClCompile Include="..\..\src\NoLifeStory\Sound.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Portal.cpp">
+    <ClCompile Include="..\..\src\NoLifeStory\Portal.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\maplestory.ico">
+    <None Include="..\..\resources\maplestory.ico">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="font.ttf">
+    <None Include="..\..\resources\font.ttf">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="..\resources.rc">
+    <ResourceCompile Include="..\..\resources\resources.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
   </ItemGroup>

@@ -15,34 +15,43 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Server.h">
+    <ClInclude Include="..\..\src\NoLifeServer\Server.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Global.h">
+    <ClInclude Include="..\..\src\NoLifeServer\Global.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="LoginServer.h">
+    <ClInclude Include="..\..\src\NoLifeServer\LoginServer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\SuperGlobal.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+	<ClInclude Include="..\..\resources\Resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Server.cpp">
+    <ClCompile Include="..\..\src\NoLifeServer\Server.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="NoLifeServer.cpp">
+    <ClCompile Include="..\..\src\NoLifeServer\NoLifeServer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="LoginServer.cpp">
+    <ClCompile Include="..\..\src\NoLifeServer\LoginServer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\maplestory.ico">
+    <None Include="..\..\resources\maplestory.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\resources\font.ttf">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="..\resources.rc">
+    <ResourceCompile Include="..\..\resources\resources.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
   </ItemGroup>

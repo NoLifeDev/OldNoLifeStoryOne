@@ -1,10 +1,3 @@
-ipch
-/Debug
-/Release
-/NoLifeStory/Debug
-/NoLifeStory/Release
-/NoLifeServer/Debug
-/NoLifeServer/Release
 *.opensdf
 *.sdf
 *.suo
@@ -15,3 +8,5 @@ ipch
 *.log
 *.mp3
 *.gitattributes
+*.exe
+*.pdb

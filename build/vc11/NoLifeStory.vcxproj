@@ -22,6 +22,7 @@
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>Unicode</CharacterSet>
     <PlatformToolset>v110</PlatformToolset>
+    <TargetPlatformVersion>7.0</TargetPlatformVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -29,6 +30,7 @@
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
     <PlatformToolset>v110</PlatformToolset>
+    <TargetPlatformVersion>7.0</TargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -43,14 +45,16 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
-    <IncludePath>$(SolutionDir)include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)..\..\include;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)lib\$(Configuration);$(LibraryPath)</LibraryPath>
+    <IntDir>$(ProjectName)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(SolutionDir)include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)..\..\include;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)lib\$(Configuration);$(LibraryPath)</LibraryPath>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <IntDir>$(SolutionDir)$(ProjectName)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -105,60 +109,63 @@
     </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\Resource.h" />
-    <ClInclude Include="AniSprite.h" />
-    <ClInclude Include="Back.h" />
-    <ClInclude Include="CommandFunctions.h" />
-    <ClInclude Include="Client.h" />
-    <ClInclude Include="Config.h" />
-    <ClInclude Include="Console.h" />
-    <ClInclude Include="Foothold.h" />
-    <ClInclude Include="Functions.h" />
-    <ClInclude Include="Global.h" />
-    <ClInclude Include="Graphics.h" />
-    <ClInclude Include="Keys.h" />
-    <ClInclude Include="Map.h" />
-    <ClInclude Include="Network.h" />
-    <ClInclude Include="Obj.h" />
-    <ClInclude Include="Sound.h" />
-    <ClInclude Include="Sprite.h" />
-    <ClInclude Include="Tile.h" />
-    <ClInclude Include="Time.h" />
-    <ClInclude Include="Utilities.h" />
-    <ClInclude Include="View.h" />
-    <ClInclude Include="WZ.h" />
+    <ClInclude Include="..\..\src\NoLifeStory\Portal.h" />
+    <ClInclude Include="..\..\src\SuperGlobal.h" />
+    <ClInclude Include="..\..\resources\Resource.h" />
+    <ClInclude Include="..\..\src\NoLifeStory\AniSprite.h" />
+    <ClInclude Include="..\..\src\NoLifeStory\Back.h" />
+    <ClInclude Include="..\..\src\NoLifeStory\CommandFunctions.h" />
+    <ClInclude Include="..\..\src\NoLifeStory\Client.h" />
+    <ClInclude Include="..\..\src\NoLifeStory\Config.h" />
+    <ClInclude Include="..\..\src\NoLifeStory\Console.h" />
+    <ClInclude Include="..\..\src\NoLifeStory\Foothold.h" />
+    <ClInclude Include="..\..\src\NoLifeStory\Functions.h" />
+    <ClInclude Include="..\..\src\NoLifeStory\Global.h" />
+    <ClInclude Include="..\..\src\NoLifeStory\Graphics.h" />
+    <ClInclude Include="..\..\src\NoLifeStory\Keys.h" />
+    <ClInclude Include="..\..\src\NoLifeStory\Map.h" />
+    <ClInclude Include="..\..\src\NoLifeStory\Network.h" />
+    <ClInclude Include="..\..\src\NoLifeStory\Obj.h" />
+    <ClInclude Include="..\..\src\NoLifeStory\Sound.h" />
+    <ClInclude Include="..\..\src\NoLifeStory\Sprite.h" />
+    <ClInclude Include="..\..\src\NoLifeStory\Tile.h" />
+    <ClInclude Include="..\..\src\NoLifeStory\Time.h" />
+    <ClInclude Include="..\..\src\NoLifeStory\Utilities.h" />
+    <ClInclude Include="..\..\src\NoLifeStory\View.h" />
+    <ClInclude Include="..\..\src\NoLifeStory\WZ.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="AniSprite.cpp" />
-    <ClCompile Include="Back.cpp" />
-    <ClCompile Include="CommandFunctions.cpp" />
-    <ClCompile Include="Client.cpp" />
-    <ClCompile Include="Config.cpp" />
-    <ClCompile Include="Console.cpp" />
-    <ClCompile Include="Foothold.cpp" />
-    <ClCompile Include="Functions.cpp" />
-    <ClCompile Include="Graphics.cpp" />
-    <ClCompile Include="Map.cpp" />
-    <ClCompile Include="Network.cpp" />
-    <ClCompile Include="NoLifeStory.cpp">
+    <ClCompile Include="..\..\src\NoLifeStory\AniSprite.cpp" />
+    <ClCompile Include="..\..\src\NoLifeStory\Back.cpp" />
+    <ClCompile Include="..\..\src\NoLifeStory\CommandFunctions.cpp" />
+    <ClCompile Include="..\..\src\NoLifeStory\Client.cpp" />
+    <ClCompile Include="..\..\src\NoLifeStory\Config.cpp" />
+    <ClCompile Include="..\..\src\NoLifeStory\Console.cpp" />
+    <ClCompile Include="..\..\src\NoLifeStory\Foothold.cpp" />
+    <ClCompile Include="..\..\src\NoLifeStory\Functions.cpp" />
+    <ClCompile Include="..\..\src\NoLifeStory\Graphics.cpp" />
+    <ClCompile Include="..\..\src\NoLifeStory\Map.cpp" />
+    <ClCompile Include="..\..\src\NoLifeStory\Network.cpp" />
+    <ClCompile Include="..\..\src\NoLifeStory\NoLifeStory.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="Obj.cpp" />
-    <ClCompile Include="Sound.cpp" />
-    <ClCompile Include="Sprite.cpp" />
-    <ClCompile Include="Tile.cpp" />
-    <ClCompile Include="Time.cpp" />
-    <ClCompile Include="Utilities.cpp" />
-    <ClCompile Include="View.cpp" />
-    <ClCompile Include="WZ.cpp" />
+    <ClCompile Include="..\..\src\NoLifeStory\Obj.cpp" />
+    <ClCompile Include="..\..\src\NoLifeStory\Portal.cpp" />
+    <ClCompile Include="..\..\src\NoLifeStory\Sound.cpp" />
+    <ClCompile Include="..\..\src\NoLifeStory\Sprite.cpp" />
+    <ClCompile Include="..\..\src\NoLifeStory\Tile.cpp" />
+    <ClCompile Include="..\..\src\NoLifeStory\Time.cpp" />
+    <ClCompile Include="..\..\src\NoLifeStory\Utilities.cpp" />
+    <ClCompile Include="..\..\src\NoLifeStory\View.cpp" />
+    <ClCompile Include="..\..\src\NoLifeStory\WZ.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\maplestory.ico" />
-    <None Include="font.ttf" />
+    <None Include="..\..\resources\maplestory.ico" />
+    <None Include="..\..\resources\font.ttf" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="..\resources.rc" />
+    <ResourceCompile Include="..\..\resources\resources.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

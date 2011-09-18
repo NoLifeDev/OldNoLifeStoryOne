@@ -133,4 +133,4 @@
 using namespace std;
 
 //And resources
-#include "Resource.h"
+#include "../resources/Resource.h"

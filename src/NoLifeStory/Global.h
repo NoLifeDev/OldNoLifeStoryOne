@@ -21,6 +21,7 @@
 #include "Obj.h"
 #include "Tile.h"
 #include "Back.h"
+#include "Portal.h"
 #include "Map.h"
 #include "View.h"
 #include "Config.h"
