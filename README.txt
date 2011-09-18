@@ -1,17 +1,11 @@
 Welcome to NoLifeStory!
 
-If you're using windows...
+Directory layout:
 
-In the NoLifeStory solution you'll find 2 projects:
-NoLifeStory is the client
-NoLifeServer is the server
-All the dependencies are included in the git repo so all you have to do is open the solution and run the project you want.
-
-If you're not using windows...
-
-Get the following libraries:
-zlib
-SFML2
-
-Then make yourself a makefile or project for whatever IDE you use, and build it somehow.
-It's all standard C++ so you shouldn't have any major problems.
+build - Folder with projects for various IDEs and compilers
+build/vc10 - Visual Studio 10 projects
+build/vc11 - Visual Studio 11 projects
+doc - Documentation for NLS. You need to checkout the submodule on the gh-pages branch to access the documentation.
+include - Generic headers for libraries used by NLS
+resources - Various resources such as icons and fonts
+src - The source code to the program
