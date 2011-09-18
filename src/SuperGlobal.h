@@ -57,22 +57,28 @@
 #include <algorithm>
 #include <allocators>
 #include <array>
+#ifdef VS11
 #include <atomic>
+#endif
 #include <bitset>
 #include <cassert>
 #include <ccomplex>
 #include <cctype>
 #include <cerrno>
 #include <cfloat>
+#ifdef VS11
 #include <chrono>
+#endif
 #include <ciso646>
 #include <climits>
 #include <clocale>
 #include <cmath>
 #include <codecvt>
 #include <complex>
+#ifdef VS11
 #include <condition_variable>
 #include <csetjmp>
+#endif
 #include <csignal>
 #include <cstdarg>
 #include <cstddef>
@@ -85,13 +91,20 @@
 #include <cwctype>
 #include <deque>
 #include <exception>
+#ifdef VS11
 #include <filesystem>
+#endif
 #include <forward_list>
 #include <fstream>
 #include <functional>
+#ifdef VS11
 #include <future>
+#endif
 #include <hash_map>
 #include <hash_set>
+#ifdef VS10
+#include <initializer_list>
+#endif
 #include <iomanip>
 #include <ios>
 #include <iosfwd>
@@ -103,15 +116,21 @@
 #include <locale>
 #include <map>
 #include <memory>
+#ifdef VS11
 #include <mutex>
+#endif
 #include <new>
 #include <numeric>
 #include <ostream>
 #include <queue>
 #include <random>
+#ifdef VS11
 #include <ratio>
+#endif
 #include <regex>
+#ifdef VS11
 #include <scoped_allocator>
+#endif
 #include <set>
 #include <sstream>
 #include <stack>
@@ -120,7 +139,9 @@
 #include <string>
 #include <strstream>
 #include <system_error>
+#ifdef VS11
 #include <thread>
+#endif
 #include <tuple>
 #include <type_traits>
 #include <typeindex>

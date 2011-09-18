@@ -10,7 +10,12 @@ NLS::Console::Console() {
 	shutdown = false;
 	toggle = false;
 	show = true;
+#ifdef VS11
 	t = new thread([&](){this->Loop();});
+#else
+	t = new sf::Thread([&](){this->Loop();});
+	t->Launch();
+#endif
 }
 
 void NLS::Console::Loop() {
@@ -60,9 +65,15 @@ void NLS::Console::Loop() {
 					pos = min<int32_t>(str.size(), pos+1);
 					break;
 				case sf::Keyboard::Return:
+#ifdef VS11
+					m.lock();
+					strs.push_back(str);
+					m.unlock();
+#else
 					m.Lock();
 					strs.push_back(str);
 					m.Unlock();
+#endif
 					HandleCommand(str);
 					str.clear();
 					pos = 0;
@@ -90,7 +101,11 @@ void NLS::Console::Loop() {
 		sf::Text t(str, *font, 8);
 		t.SetPosition(0, window->GetHeight()-10);
 		window->Draw(t);
+#ifdef VS11
+		m.lock();
+#else
 		m.Lock();
+#endif
 		for (int i = 0; i < strs.size(); i++) {
 			sf::Text t(strs[strs.size()-i-1], *font, 8);
 			t.SetPosition(0, window->GetHeight()-12*i-24);
@@ -99,7 +114,11 @@ void NLS::Console::Loop() {
 				break;
 			}
 		}
+#ifdef VS11
+		m.unlock();
+#else
 		m.Unlock();
+#endif
 		sf::Shape s = sf::Shape::Line(0, window->GetHeight()-12, window->GetWidth(), window->GetHeight()-12, 1, sf::Color::White);
 		window->Draw(s);
 		window->Display();
@@ -156,11 +175,19 @@ void NLS::Console::HandleCommand(const string& str) {
 }
 
 void NLS::Console::Push(const string& str) {
-	m.Lock();
+#ifdef VS11
+		m.lock();
+#else
+		m.Lock();
+#endif
 	file << str << endl;
 	strs.push_back(str);
 	file.flush();
-	m.Unlock();
+#ifdef VS11
+		m.unlock();
+#else
+		m.Unlock();
+#endif
 }
 
 void NLS::Console::Toggle() {
@@ -170,6 +197,10 @@ void NLS::Console::Toggle() {
 
 NLS::Console::~Console() {
 	shutdown = true;
+#ifdef VS11
 	t->join();
+#else
+	t->Wait();
+#endif
 	delete t;
 }
