@@ -21,23 +21,27 @@ NLS::_View::_View() {
 
 void NLS::_View::Step() {
 	if (sf::Keyboard::IsKeyPressed(sf::Keyboard::Up)) {
-		ty -= 10;
+		ty -= Time.delta;
 	}
 	if (sf::Keyboard::IsKeyPressed(sf::Keyboard::Down)) {
-		ty += 10;
+		ty += Time.delta;
 	}
 	if (sf::Keyboard::IsKeyPressed(sf::Keyboard::Left)) {
-		tx -= 10;
+		tx -= Time.delta;
 	}
 	if (sf::Keyboard::IsKeyPressed(sf::Keyboard::Right)) {
-		tx += 10;
+		tx += Time.delta;
 	}
+	tx = max(min(tx, xmax-800), xmin);
+	ty = max(min(ty, ymax-600), ymin);
 	double dx = tx-vx;
 	double dy = ty-vy;
 	dx = max(abs(dx)-20, 0.0)*sign(dx);
 	dy = max(abs(dy)-20, 0.0)*sign(dy);
 	vx += Time.delta*dx/200;
 	vy += Time.delta*dy/200;
+	vx = max(min(vx, xmax-800), xmin);
+	vy = max(min(vy, ymax-600), ymin);
 	x = vx;
 	y = vy;
 	glLoadIdentity();
