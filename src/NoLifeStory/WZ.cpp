@@ -551,8 +551,8 @@ void NLS::WZ::PNGProperty::Parse() {
 			uint32_t len = 2*sprite.data->width*sprite.data->height;
 			Decompress(length, len);
 			for (uint32_t i = 0; i < len; i++) {
-				Buf2[i*2] = (Buf1[i]&0x0F)|((Buf1[i]&0x0F)<<4);
-				Buf2[i*2+1] = (Buf1[i]&0xF0)|((Buf1[i]&0xF0)>>4);
+				Buf2[i*2] = (Buf1[i]&0x0F)*0x11;
+				Buf2[i*2+1] = ((Buf1[i]&0xF0)>>4)*0x11;
 			}
 			glTexImage2D(GL_TEXTURE_2D, 0, 4, sprite.data->width, sprite.data->height, 0, GL_BGRA, GL_UNSIGNED_BYTE, Buf2);
 			break;
@@ -568,26 +568,20 @@ void NLS::WZ::PNGProperty::Parse() {
 		{
 			uint32_t len = 2*sprite.data->width*sprite.data->height;
 			Decompress(length, len);
-			glTexImage2D(GL_TEXTURE_2D, 0, 4, sprite.data->width, sprite.data->height, 0, GL_BGR, GL_UNSIGNED_SHORT_5_6_5, Buf1);
+			glTexImage2D(GL_TEXTURE_2D, 0, 4, sprite.data->width, sprite.data->height, 0, GL_BGR, GL_UNSIGNED_SHORT_5_6_5_REV, Buf1);
 			break;
 		}
 	case 517:
 		{
 			uint32_t len = sprite.data->width*sprite.data->height/128;
 			Decompress(length, len);
-			for (uint32_t i = 0; i < len*2; i++) {
-				uint8_t b4 = (Buf1[i*2]&0x0F)|((Buf1[i*2]&0x0F)<<4);
-				uint8_t b3 = (Buf1[i*2]&0xF0)|((Buf1[i*2]&0xF0)>>4);
-				uint8_t b2 = (Buf1[i*2+1]&0x0F)|((Buf1[i*2+1]&0x0F)<<4);
-				uint8_t b1 = (Buf1[i*2+1]&0xF0)|((Buf1[i*2+1]&0xF0)>>4);
-				for (uint32_t j = 0; j < 256; j++) {
-					Buf2[i*1024+j*4] = b1;
-					Buf2[i*1024+j*4+1] = b2;
-					Buf2[i*1024+j*4+2] = b3;
-					Buf2[i*1024+j*4+3] = b4;
+			for (uint32_t i = 0; i*2 < len; i++) {
+				for (uint32_t j = 0; j < 512; j++) {
+					Buf2[i*512+j*2] = Buf1[2*i];
+					Buf2[i*512+j*2+1] = Buf1[2*i+1];
 				}
 			}
-			glTexImage2D(GL_TEXTURE_2D, 0, 4, sprite.data->width, sprite.data->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, Buf2);
+			glTexImage2D(GL_TEXTURE_2D, 0, 4, sprite.data->width, sprite.data->height, 0, GL_BGR, GL_UNSIGNED_SHORT_5_6_5_REV, Buf2);
 			break;
 		}
 	default:
