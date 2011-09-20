@@ -4,6 +4,17 @@
 ////////////////////////////////////////////////////
 #include "Global.h"
 
+NLS::LoginServer *NLS::LoginServer::instance = nullptr;
+
+void NLS::LoginServer::Start() {
+	if (instance != nullptr) {
+		cout << "WARNING: Instance of LoginServer already exists!" << endl;
+		Shutdown();
+	}
+	cout << "INFO: Starting up LoginServer" << endl;
+	instance = new LoginServer();
+}
+
 NLS::LoginServer::LoginServer() {
 	done = false;
 	listener.SetBlocking(false);
@@ -11,14 +22,13 @@ NLS::LoginServer::LoginServer() {
 		cerr << "ERROR: LoginServer failed to listen on port 8484" << endl;
 		throw(273);
 	}
-	cout << "INFO: LoginServer up and listening on port 8484" << endl;
-	//Create world servers
 	thread = new sf::Thread([&](){this->Loop();});
 	thread->Launch();
+	cout << "INFO: LoginServer up and listening on port 8484" << endl;
 }
 
 void NLS::LoginServer::Loop() {
-	while (true) {
+	while (!done) {
 		static sf::TcpSocket* next(new sf::TcpSocket());
 		if (listener.Accept(*next) == sf::Socket::Done) {
 			cout << "INFO: Player connected from " << next->GetRemoteAddress() << ":" << next->GetRemotePort() << endl;
@@ -26,11 +36,13 @@ void NLS::LoginServer::Loop() {
 			next = new sf::TcpSocket();
 		}
 		sf::Sleep(0.1);
-		if (done) {
-			//Shutdown world serverz
-			cout << "INFO: Shutting down LoginServer" << endl;
-			//Clean up stuff
-			break;
-		}
 	}
+}
+
+void NLS::LoginServer::Shutdown() {
+	cout << "INFO: Shutting down LoginServer" << endl;
+	instance->done = true;
+	instance->thread->Wait();
+	delete instance;
+	instance = nullptr;
 }

@@ -6,4 +6,5 @@
 
 #include "..\SuperGlobal.h"
 #include "LoginServer.h"
+#include "WorldServer.h"
 #include "Server.h"
