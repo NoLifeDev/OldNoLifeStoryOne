@@ -7,11 +7,9 @@
 NLS::LoginServer* loginServer;
 
 void NLS::Init(vector<string> args) {
-	loginServer = new LoginServer();
-	//for each world
-	//do the same with a WorldServer
-	//plus for each channel in that world
-	//do the same with a ChannelServer
+	LoginServer::Start();
+	WorldServer::Start();
+	cout << "INFO: NoLifeServer is up and running" << endl;
 }
 
 void NLS::Loop() {
@@ -26,43 +24,38 @@ void NLS::Loop() {
 		return words;
 	};
 	while (true) {
-		auto command = GetCommand();
+		vector<string> command = GetCommand();
 		if (command.size() == 0) {
 			continue;
-		}
-		if (command[0] == "help" or command[0] == "?") {
+		} else if (command[0] == "help" or command[0] == "?") {
 			if (command.size() > 1) {
 				if (command[1] == "shutdown") {
 					cout << "HELP: Shuts down NoLifeServer gracefully, preserving all data" << endl;
-				}
-				if (command[1] == "forceshutdown") {
+				} else if (command[1] == "forceshutdown") {
 					cout << "HELP: Forces NoLifeServer to shutdown immediately, losing any temporary data" << endl;
-				}
-				if (command[1] == "help" or command[1] == "?") {
+				} else if (command[1] == "help" or command[1] == "?") {
 					cout << "HELP: Displays information on commands available and what each command does" << endl;
 				}
 			} else {
 				cout << "HELP: Available commands: help, ?, shutdown, forceshutdown" << endl;
 				cout << "HELP: Enter \"help command\" for help with a particular command" << endl;
 			}
-		}
-		if (command[0] == "shutdown") {
-			cout << "INFO: Initiating NoLifeServer shutdown" << endl;
-			break;
-		}
-		if (command[0] == "forceshutdown") {
+		} else if (command[0] == "shutdown") {
+			return;
+		} else if (command[0] == "forceshutdown") {
 			cout << "INFO: Forcing NoLifeServer shutdown" << endl;
-			system("pause");
-			exit(0);
+			exit(1);
+		} else {
+			cout << "INFO: Unknown command: " << command[0] << endl;
 		}
 	}
 	return;
 }
 
 void NLS::Unload() {
-	loginServer->done = true;
-	loginServer->thread->Wait();
-	delete loginServer;
+	cout << "INFO: Initiating NoLifeServer shutdown" << endl;
+	LoginServer::Shutdown();
+	WorldServer::Shutdown();
 	cout << "INFO: NoLifeServer shutdown complete" << endl;
 	system("pause");
 }

@@ -4,16 +4,15 @@
 ///////////////////////////////////////////////
 
 namespace NLS {
-	class LoginServer {
+	class WorldServer {
 	public:
-		static void Start();
-		static void Shutdown();
+		static void Start(int n = -1);
+		static void Shutdown(int n = -1);
 	private:
-		LoginServer();
+		WorldServer(int n);
 		void Loop();
 		bool done;
-		sf::Thread *thread;
-		sf::TcpListener listener;
-		static LoginServer *instance;
+		sf::Thread* thread;
+		static map <int, WorldServer*> instances;
 	};
 };
