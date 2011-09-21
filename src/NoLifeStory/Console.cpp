@@ -65,15 +65,7 @@ void NLS::Console::Loop() {
 					pos = min<int32_t>(str.size(), pos+1);
 					break;
 				case sf::Keyboard::Return:
-#ifdef VS11
-					m.lock();
-					strs.push_back(str);
-					m.unlock();
-#else
-					m.Lock();
-					strs.push_back(str);
-					m.Unlock();
-#endif
+					Push(str);
 					HandleCommand(str);
 					str.clear();
 					pos = 0;
@@ -171,6 +163,8 @@ void NLS::Console::HandleCommand(const string& str) {
 		} else {
 			Map::Load(command[1], command[2]);
 		}
+	} else {
+		Push("Unknown command!");
 	}
 }
 
