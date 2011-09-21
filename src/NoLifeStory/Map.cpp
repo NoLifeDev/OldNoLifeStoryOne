@@ -21,10 +21,9 @@ void NLS::Map::Load(const string& id, const string& portal) {
 void NLS::Map::Load() {
 	if (curmap == nextmap) {
 		C("ERROR") << "The specified map is already loaded" << endl;
+		nextmap = "";
 		return;
 	}
-	curmap = nextmap;
-	Time.Reset();
 	if (nextmap == "MapLogin") {
 		node = WZ::Top["UI"]["MapLogin"];
 		//throw(273);
@@ -41,6 +40,8 @@ void NLS::Map::Load() {
 		nextportal = "";
 		return;
 	}
+	Time.Reset();
+	curmap = nextmap;
 	C("INFO") << "Loading map " << nextmap << endl;
 	string bgm = node["info"]["bgm"];
 	auto p = bgm.find('/');
