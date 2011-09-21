@@ -17,6 +17,8 @@ NLS::_View::_View() {
 	xmax = 0;
 	ymin = 0;
 	ymax = 0;
+	width = 800;
+	height = 600;
 }
 
 void NLS::_View::Step() {
@@ -32,16 +34,16 @@ void NLS::_View::Step() {
 	if (sf::Keyboard::IsKeyPressed(sf::Keyboard::Right)) {
 		tx += Time.delta;
 	}
-	tx = max(min(tx, xmax-800), xmin);
-	ty = max(min(ty, ymax-600), ymin);
+	tx = max(min(tx, xmax-width+20), xmin-20);
+	ty = max(min(ty, ymax-height+20), ymin-20);
 	double dx = tx-vx;
 	double dy = ty-vy;
 	dx = max(abs(dx)-20, 0.0)*sign(dx);
 	dy = max(abs(dy)-20, 0.0)*sign(dy);
 	vx += Time.delta*dx/200;
 	vy += Time.delta*dy/200;
-	vx = max(min(vx, xmax-800), xmin);
-	vy = max(min(vy, ymax-600), ymin);
+	vx = max(min(vx, xmax-width+20), xmin-20);
+	vy = max(min(vy, ymax-height+20), ymin-20);
 	x = vx;
 	y = vy;
 	glLoadIdentity();

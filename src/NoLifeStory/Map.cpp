@@ -61,6 +61,7 @@ void NLS::Map::Load() {
 	View.tx = 0;
 	View.ty = 0;
 	if (node["info"]["VRLeft"]) {
+		C("INFO") << "Preset view bounds" << endl;
 		View.xmin = node["info"]["VRLeft"];
 		View.xmax = node["info"]["VRRight"];
 		View.ymin = node["info"]["VRTop"];
@@ -76,12 +77,8 @@ void NLS::Map::Load() {
 			View.xmax = max(max(View.xmax, (*it)->x1), (*it)->x2);
 			View.ymax = max(max(View.ymax, (*it)->y1), (*it)->y2);
 		}
-		if (View.xmax-View.xmin > 800) {
-			View.xmin -= 10;
-			View.xmax += 10;
-		}
-		View.ymax += 110;
-		View.ymin = min(View.ymax-600, View.ymin-360);
+		View.ymax += 128;
+		View.ymin = min(View.ymax-View.height, View.ymin-View.height);
 	}
 	nextmap = "";
 	nextportal = "";
