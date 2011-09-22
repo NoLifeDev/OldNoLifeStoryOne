@@ -4,6 +4,8 @@
 ////////////////////////////////////////////////////
 #include "Global.h"
 
+deque <NLS::SpriteData*> NLS::Sprite::loaded;
+
 NLS::Sprite::Sprite() {
 	data = 0;
 }
@@ -65,7 +67,9 @@ void NLS::Sprite::Draw(int x, int y, bool flipped, float alpha, float rotation) 
 
 void NLS::Sprite::GetTexture() {
 	static SpriteData* lastData = 0;
-	if (data == lastData) return;
+	if (data == lastData) {
+		return;
+	}
 	lastData = data;
 	if (!data) {
 		glBindTexture(GL_TEXTURE_2D, NULL);
@@ -77,8 +81,16 @@ void NLS::Sprite::GetTexture() {
 			return;
 		}
 		((WZ::PNGProperty*)data->png)->Parse();
-		data->loaded = true;
+		loaded.push_back(data);
 	} else {
 		glBindTexture(GL_TEXTURE_2D, data->texture);
+	}
+}
+
+void NLS::Sprite::Unload() {
+	while (loaded.size() > 500) {
+		glDeleteTextures(1, &loaded.front()->texture);
+		loaded.front()->loaded = false;
+		loaded.pop_front();
 	}
 }

@@ -7,6 +7,6 @@ namespace NLS {
 	public:
 		static void Load(Node n);
 		void Draw();
-		vector <Reactor*> Reactors;
+		static vector <Reactor*> Reactors;
 	};
 };

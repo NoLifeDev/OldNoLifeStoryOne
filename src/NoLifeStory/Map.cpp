@@ -53,11 +53,13 @@ void NLS::Map::Load() {
 	}
 	Backgrounds.clear();
 	Foregrounds.clear();
+	Sprite::Unload();
 	Foothold::Load(node);
 	Tile::Load(node);
 	Obj::Load(node);
 	Back::Load(node);
 	Portal::Load(node);
+	Reactor::Load(node);
 	View.tx = 0;
 	View.ty = 0;
 	if (node["info"]["VRLeft"]) {
