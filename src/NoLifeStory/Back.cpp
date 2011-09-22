@@ -112,6 +112,7 @@ void NLS::Back::Draw() {
 			spr.Draw(x, y, flipped, 1, rotation);
 		}
 	};
+	//TODO - Look into drawing a single tiled primitive when cx/cy = width/height
 	auto drawhorz = [&]() {
 		for(int i = (x+ax-View.x+ox+orx)%cx-cx+View.x-ox; i+ox < View.x+800+cx+orx; i += cx) {
 			draw(i+ox, y+oy+ay, f, ang);

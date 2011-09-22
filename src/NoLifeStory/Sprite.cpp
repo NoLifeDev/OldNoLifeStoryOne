@@ -38,7 +38,7 @@ void NLS::Sprite::Draw(int x, int y, bool flipped, float alpha, float rotation) 
 		glTranslatef(-data->originx, -data->originy, 0);
 	}
 	glColor4f(1, 1, 1, alpha);
-	GetTexture();
+	GetTexture();//TODO - Avoid this call if the data is already the same
 	glBegin(GL_QUADS);
 	if (flipped) {
 		glTexCoord2f(1, 0);

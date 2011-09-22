@@ -529,7 +529,7 @@ NLS::WZ::PNGProperty::PNGProperty(ifstream* file, Sprite spr) {
 	sprite.data->height = ReadCInt(file);
 	format = ReadCInt(file);
 	format2 = Read<uint8_t>(file);
-	file->seekg(4, ios_base::cur);
+	file->seekg(4, ios::cur);
 	length = Read<int32_t>(file);
 	if (length <= 0) {
 		C("ERROR") << "What sort of shit is this?" << endl;
@@ -550,7 +550,7 @@ void NLS::WZ::PNGProperty::Parse() {
 		{
 			uint32_t len = 2*sprite.data->width*sprite.data->height;
 			Decompress(length, len);
-			for (uint32_t i = 0; i < len; i++) {
+			for (uint32_t i = 0; i < len; i++) {//TODO - Figure out if I can avoid this step somehow
 				Buf2[i*2] = (Buf1[i]&0x0F)*0x11;
 				Buf2[i*2+1] = ((Buf1[i]&0xF0)>>4)*0x11;
 			}
@@ -576,7 +576,7 @@ void NLS::WZ::PNGProperty::Parse() {
 			uint32_t len = sprite.data->width*sprite.data->height/128;
 			Decompress(length, len);
 			for (uint32_t i = 0; i*2 < len; i++) {
-				for (uint32_t j = 0; j < 512; j++) {
+				for (uint32_t j = 0; j < 512; j++) {//TODO - Check for built in methods to do this in a single function call
 					Buf2[i*512+j*2] = Buf1[2*i];
 					Buf2[i*512+j*2+1] = Buf1[2*i+1];
 				}
